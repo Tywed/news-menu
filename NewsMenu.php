@@ -44,13 +44,13 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     use ModuleGlobalTrait;
 
     // The name of this module.
-    public const CUSTOM_MODULE = 'NewsMenu';
+    public const CUSTOM_MODULE = 'News-Menu';
 
     // The author of this module.
     public const CUSTOM_AUTHOR = 'Tywed';
 
     // The website of this module.
-    public const CUSTOM_WEBSITE = 'https://github.com/' . self::CUSTOM_MODULE . '/';
+    public const CUSTOM_WEBSITE = 'https://github.com/tywed/' . self::CUSTOM_MODULE . '/';
 
     // The version of this module.
     public const CUSTOM_VERSION = '0.1.0';
@@ -64,7 +64,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     // The title of this module.
     public function title(): string
     {
-        return I18N::translate('News menu');
+        return I18N::translate('News');
     }
 
     // The description of this module.

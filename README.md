@@ -39,7 +39,7 @@ This section documents installation instructions for this module.
 2. Unzip the package into your `webtrees/modules_v4` directory of your web server.
 3. Rename the folder to `NewsMenu`. It's safe to overwrite the respective directory if it already exists.
 4. Login to **webtrees** as administrator, go to <span class="pointer">Control Panel/Modules/Genealogy/Menus</span>,
-   and find the module. It will be called "News menu". Check if it has a tick for "Enabled".
+   and find the module. It will be called "News". Check if it has a tick for "Enabled".
 5. Finally, click SAVE, to complete the configuration.
 
 <a name="upgrade"></a>

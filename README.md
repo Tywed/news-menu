@@ -28,7 +28,7 @@ This custom module add an extra item to the main menu as a link to a webtrees ne
 This module requires **webtrees** version 2.1 or later.
 This module has the same requirements as [webtrees#system-requirements](https://github.com/fisharebest/webtrees#system-requirements).
 
-This module was tested with **webtrees** 2.1.17 version and all standart themes.
+This module was tested with **webtrees** 2.1.17 version and all standarts themes.
 
 <a name="installation"></a>
 ## Installation

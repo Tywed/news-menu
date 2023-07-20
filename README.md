@@ -20,7 +20,7 @@ This Readme contains the following main sections
 <a name="description"></a>
 ## Description
 
-This custom module add an extra item to the main menu as a link to a webtrees news. This module is inspired by a [jp-main-menu-manual](https://github.com/jpretired/jp-main-menu-manual) and [simple-menu-module] (https://github.com/JustCarmen/webtrees-simple-menu)
+This custom module add an extra item to the main menu as a link to a webtrees news. This module is inspired by a [jp-main-menu-manual](https://github.com/jpretired/jp-main-menu-manual) and [simple-menu-module](https://github.com/JustCarmen/webtrees-simple-menu)
 
 <a name="requirements"></a>
 ## Requirements

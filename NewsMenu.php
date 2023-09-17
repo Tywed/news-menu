@@ -133,7 +133,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
  
          return new Menu($menu_title, e($url), 'news-menu');
      }
- 
+     
      // Returns the page content for the module.
      public function getPageAction(ServerRequestInterface $request): ResponseInterface
      {
@@ -155,7 +155,8 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
  
          return $this->viewResponse($this->name() . $page, [
              'title' => $this->title(),
-             'tree'  => $request->getAttribute('tree'),
+             'tree'  =>  $tree,
+             'block_id' => 0,
              'articles' => $articles,
              'limit'    => 5,
          ]);

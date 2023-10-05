@@ -1,26 +1,38 @@
 <?php
 
-/*
-Copyright (C) 2023 Tywed
+namespace Tywed\Webtrees\Module\NewsMenu;
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+use Fisharebest\Webtrees\Webtrees;
+use Illuminate\Support\Collection;
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+use function str_contains;
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 
-// This module adds the "News" item to the main menu.
+// webtrees major version switch
+if (defined("WT_MODULES_DIR")) {
+    // this is a webtrees 2.1 module. it cannot be used with webtrees 1.x (or 2.0.x). See README.md.
+    return;
+}
 
-declare(strict_types=1);
+$pattern = Webtrees::MODULES_DIR . '*/autoload.php';
+$filenames = glob($pattern, GLOB_NOSORT);
 
-require __DIR__ . '/NewsMenu.php';
+Collection::make($filenames)
+    ->filter(static function (string $filename): bool {
+        // Special characters will break PHP variable names.
+        // This also allows us to ignore modules called "foo.example" and "foo.disable"
+        $module_name = basename(dirname($filename));
+
+        foreach (['.', ' ', '[', ']'] as $character) {
+            if (str_contains($module_name, $character)) {
+                return false;
+            }
+        }
+
+        return strlen($module_name) <= 30;
+    })
+    ->each(static function (string $filename): void {
+        require_once $filename;
+    });
 
 return new NewsMenu();

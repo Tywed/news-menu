@@ -13,16 +13,16 @@ class Migration0 implements MigrationInterface
 {
     public function upgrade(): void
     {
-        
+
         if (!DB::schema()->hasColumn('news', 'brief')) {
             DB::schema()->table('news', static function (Blueprint $table): void {
-                $table->text('brief')->charset('utf8')->collation('utf8_unicode_ci');
-                $table->string('media_id', 20)->charset('utf8')->collation('utf8_unicode_ci');
+                $table->string('brief', 600)->charset('utf8')->collation('utf8_unicode_ci')->default('');
+                $table->string('media_id', 20)->charset('utf8')->collation('utf8_unicode_ci')->default('');
             });
         }
 
         if (!DB::schema()->hasTable('news_likes')) {
-            DB::schema()->create('news_likes', static function(Blueprint $table): void {
+            DB::schema()->create('news_likes', static function (Blueprint $table): void {
                 $table->unsignedInteger('news_id');
                 $table->unsignedInteger('user_id');
 
@@ -32,7 +32,7 @@ class Migration0 implements MigrationInterface
         }
 
         if (!DB::schema()->hasTable('news_comments')) {
-            DB::schema()->create('news_comments', static function (Blueprint $table): void  {
+            DB::schema()->create('news_comments', static function (Blueprint $table): void {
                 $table->increments('comments_id');
                 $table->unsignedInteger('news_id');
                 $table->unsignedInteger('user_id');
@@ -46,7 +46,7 @@ class Migration0 implements MigrationInterface
         }
 
         if (!DB::schema()->hasTable('comments_likes')) {
-            DB::schema()->create('comments_likes', static function (Blueprint $table): void  {
+            DB::schema()->create('comments_likes', static function (Blueprint $table): void {
                 $table->unsignedInteger('comments_id');
                 $table->unsignedInteger('user_id');
 

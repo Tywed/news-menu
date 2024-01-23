@@ -37,7 +37,7 @@ use Illuminate\Support\Collection;
                         <div class="col-md-4 mb-4">
                             <a href="<?= e(route('module', ['module' => '_NewsMenu_', 'action' => 'ShowNews', 'news_id' => $article->news_id, 'tree' => $tree->name()])) ?>">
                                 <? if (isset($article->media_id)) {
-                                    echo $article->media_id->displayImage(400, 267, 'crop', ['class' => 'img-fluid shadow-2-strong rounded-2 w-100']);
+                                    echo $article->media_id->displayImage(400, 267, 'contain', ['class' => 'img-fluid shadow-2-strong rounded-2 w-100']);
                                 } ?>
                             </a>
                         </div>

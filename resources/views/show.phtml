@@ -31,7 +31,7 @@ use Fisharebest\Webtrees\Tree;
           <!-- Media -->
           <div class="bg-image hover-overlay ripple rounded-0" data-mdb-ripple-color="light">
             <? if (isset($news_media)) {
-              echo $news_media->displayImage(1000, 667, 'crop', ['class' => 'w-100 me-3']);
+              echo $news_media->displayImage(1000, 667, 'contain', ['class' => 'w-100 me-3']);
             }
             ?>
             <a href="#!">

@@ -3,24 +3,48 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 ![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)
-![Latest Release](https://img.shields.io/badge/release-v0.1.1-blue)
+![Latest Release](https://img.shields.io/badge/release-v0.2.1-blue)
+
+
 
 This [webtrees](https://www.webtrees.net/) custom module add an extra item to the main menu as a link to a webtrees news. 
 
 ## Contents
 This Readme contains the following main sections
 
+* [Warning](#warning)
 * [Description](#description)
+* [Screenshots](#screenshots)
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Upgrade](#upgrade)
 * [Support](#support)
 * [License](#license)
 
+<a name="warning"></a>
+## Warning
+
+This module makes changes to the Webtrees database, the data entered through the module is not exported to GEDCOM files. Before installing the module on your main site, try to test it.
+
 <a name="description"></a>
 ## Description
 
-This custom module add an extra item to the main menu as a link to a webtrees news. This module is inspired by a [jp-main-menu-manual](https://github.com/jpretired/jp-main-menu-manual) and [simple-menu-module](https://github.com/JustCarmen/webtrees-simple-menu)
+This custom module for webtrees introduces a news management system. It extends the functionality of the main menu by adding an extra item that serves as a portal to the news section. The news management system allows users to attach images to their news posts, enriching the content with visual elements. This feature not only provides a more engaging user experience but also promotes better content organization and presentation. Furthermore, the module includes a commenting system for news posts. This feature fosters interaction between users, allowing them to express their thoughts and opinions on the news. In addition, the module introduces a 'like' functionality for news posts. This allows users to express their approval or interest in a news post, providing another layer of engagement. Finally, the module provides the ability to schedule news posts for future dates. This feature allows users to plan their news content ahead of time, ensuring that their news is always timely and relevant.In conclusion, this module significantly enhances the news management capabilities of webtrees, providing a comprehensive solution for creating, managing, and interacting with news content. This module is inspired by a [jp-main-menu-manual](https://github.com/jpretired/jp-main-menu-manual) and [simple-menu-module](https://github.com/JustCarmen/webtrees-simple-menu)
+
+<a name="screenshots"></a>
+## Screenshots
+
+Screenshot of menu
+<p align="center"><img src="docs/menu.JPG" alt="Screenshot of menu" align="center" width="80%"></p>
+
+Screenshot of the news list with images
+<p align="center"><img src="docs/news_page.JPG" alt="Screenshot of the news list with images" align="center" width="85%"></p>
+
+Screenshot with comments to the news and reactions to them
+<p align="center"><img src="docs/comments.JPG" alt="Screenshot with comments to the news and reactions to them" align="center" width="85%"></p>
+
+Screenshot of the news addition page
+<p align="center"><img src="docs/add_news.JPG" alt="Screenshot of the news addition page" align="center" width="85%"></p>
 
 <a name="requirements"></a>
 ## Requirements

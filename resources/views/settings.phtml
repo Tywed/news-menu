@@ -6,51 +6,50 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
 
 ?>
 
-<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(ModulesAllPage::class) => I18N::translate('Modules'), $title]]) ?>
+<?php echo view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(ModulesAllPage::class) => I18N::translate('Modules'), $title]]); ?>
 
-<h1><?= $title ?></h1>
+<h1><?php echo $title; ?></h1>
 <p>
-    <?= I18N::translate('Settings for the module') ?>
+    <?php echo I18N::translate('Settings for the module'); ?>
 </p>
 <div class="mb-5">
     <form method="post" class="row">
         <fieldset class="row mb-4">
             <legend class="col-form-label col-sm-7">
-            <?= I18N::translate('The order of the news module in the site menu (set the value to the desired, by default -1)') ?>
+                <?php echo I18N::translate('The order of the news module in the site menu (set the value to the desired, by default -1)'); ?>
             </legend>
             <div class="col-sm-2">
-            <input type="number" id="news_menu_order" class="form-control" name="news_menu_order" size="120" dir="auto" autofocus value="<?= e($news_menu_order) ?>">
+                <input type="number" id="news_menu_order" class="form-control" name="news_menu_order" size="120" dir="auto" autofocus value="<?php echo e($news_menu_order); ?>">
             </div>
         </fieldset>
         <fieldset class="row mb-4">
             <legend class="col-form-label col-sm-7">
-            <?= I18N::translate('Number of news items displayed') ?>
+                <?php echo I18N::translate('Number of news items displayed'); ?>
             </legend>
             <div class="col-sm-2">
-            <input type="number" id="limit_news" class="form-control" name="limit_news" size="120" dir="auto" autofocus value="<?= e($limit_news) ?>">
+                <input type="number" id="limit_news" class="form-control" name="limit_news" size="120" dir="auto" autofocus value="<?php echo e($limit_news); ?>">
             </div>
         </fieldset>
         <fieldset class="row mb-4">
             <legend class="col-form-label col-sm-7">
-            <?= I18N::translate('Number of comments displayed') ?>
+                <?php echo I18N::translate('Number of comments displayed'); ?>
             </legend>
             <div class="col-sm-2">
-            <input type="number" id="limit_comments" class="form-control" name="limit_comments" size="120" dir="auto" autofocus value="<?= e($limit_comments) ?>">
+                <input type="number" id="limit_comments" class="form-control" name="limit_comments" size="120" dir="auto" autofocus value="<?php echo e($limit_comments); ?>">
             </div>
         </fieldset>
-    
-    
+
+
         <div class="row mb-3">
-        <div class="offset-sm-3 col-sm-9">
-            <button type="submit" class="btn btn-primary">
-                <?= view('icons/save') ?>
-                <?= I18N::translate('save') ?>
-            </button>
+            <div class="offset-sm-3 col-sm-9">
+                <button type="submit" class="btn btn-primary">
+                    <?php echo view('icons/save'); ?>
+                    <?php echo I18N::translate('save'); ?>
+                </button>
+            </div>
         </div>
-    </div>
 
-            <?= csrf_field() ?>
-        </form>
-    </div>
+        <?php echo csrf_field(); ?>
+    </form>
 </div>
-
+</div>

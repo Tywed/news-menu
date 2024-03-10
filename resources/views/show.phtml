@@ -25,7 +25,7 @@ use Fisharebest\Webtrees\Tree;
           <div class="card-body">
             <!-- Title -->
             <div class="text-center mb-3">
-              <h3 class="wt-page-title text-center fw-bold mt-2 mb-3"><?= e($subject) ?></h3>
+              <h3 class="wt-page-title text-center fw-bold mt-2 mb-3"><?php echo e($subject) ?></h3>
             </div>
           </div>
           <!-- Media -->
@@ -45,11 +45,11 @@ use Fisharebest\Webtrees\Tree;
               <div class="col-6">
                 <?php if ($updated->format('Y-m-d H:i:s') >= date('Y-m-d H:i:s')) : ?>
                   <span class="badge bg-warning px-2 py-1 shadow-1-strong mb-3">
-                    <?= I18N::translate('Planned:') ?> <?= view('components/datetime', ['timestamp' => $updated]) ?>
+                    <?php echo I18N::translate('Planned:') ?> <?php echo view('components/datetime', ['timestamp' => $updated]) ?>
                   </span>
                 <?php else : ?>
                   <span class="badge bg-primary px-2 py-1 shadow-1-strong mb-3">
-                    <?= view('components/datetime', ['timestamp' => $updated]); ?>
+                    <?php echo view('components/datetime', ['timestamp' => $updated]); ?>
                   </span>
                 <?php endif; ?>
               </div>
@@ -60,23 +60,23 @@ use Fisharebest\Webtrees\Tree;
           <div class="card-body">
             <div class="d-flex justify-content-between mb-3">
               <div>
-                <p><?= html_entity_decode($brief) ?></p>
-                <p><?= html_entity_decode($body) ?></p>
+                <p><?php echo html_entity_decode($brief) ?></p>
+                <p><?php echo html_entity_decode($body) ?></p>
               </div>
             </div>
 
             <?php if (Auth::isManager($tree)) : ?>
               <hr />
-              <form method="post" action="<?= e(route('module', ['module' => '_NewsMenu_', 'action' => 'DeleteNews', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>">
-                <a class="btn btn-link" href="<?= e(route('module', ['module' => '_NewsMenu_', 'action' => 'EditNews', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>">
-                  <?= I18N::translate('Edit') ?>
+              <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'DeleteNews', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>">
+                <a class="btn btn-link" href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'EditNews', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>">
+                  <?php echo I18N::translate('Edit') ?>
                 </a>
 
-                <button class="btn btn-link" type="submit" data-wt-confirm="<?= I18N::translate('Are you sure you want to delete “%s”?', e($subject)) ?>" onclick="return confirm(this.dataset.confirm);">
-                  <?= I18N::translate('Delete') ?>
+                <button class="btn btn-link" type="submit" data-wt-confirm="<?php echo I18N::translate('Are you sure you want to delete “%s”?', e($subject)) ?>" onclick="return confirm(this.dataset.confirm);">
+                  <?php echo I18N::translate('Delete') ?>
                 </button>
 
-                <?= csrf_field() ?>
+                <?php echo csrf_field() ?>
               </form>
             <?php endif; ?>
           </div>
@@ -90,10 +90,10 @@ use Fisharebest\Webtrees\Tree;
                   <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
                   <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
                 </svg>
-                <?= I18N::plural('%s comment', '%s comments', $total_comments, $total_comments); ?>
+                <?php echo I18N::plural('%s comment', '%s comments', $total_comments, $total_comments); ?>
               </button>
 
-              <a id="like-button" class="btn btn btn-outline-danger" href="javascript:void(0);" data-news-id="<?= e($news_id) ?>" data-liked="<?= e($like_exists != 0) ?>">
+              <a id="like-button" class="btn btn btn-outline-danger" href="javascript:void(0);" data-news-id="<?php echo e($news_id) ?>" data-liked="<?php echo e($like_exists != 0) ?>">
                 <?php if (e($like_exists != 0)) : ?>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-heart-fill" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
@@ -103,7 +103,7 @@ use Fisharebest\Webtrees\Tree;
                     <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"></path>
                   </svg>
                 <?php endif; ?>
-                <span id="like-count"><?= e($total_likes) ?></span>
+                <span id="like-count"><?php echo e($total_likes) ?></span>
               </a>
             </div>
 
@@ -124,10 +124,10 @@ use Fisharebest\Webtrees\Tree;
                       ?>
                     </div>
                     <div>
-                      <h6 class="fw-bold mb-0"><?= $com->real_name ?></h6>
+                      <h6 class="fw-bold mb-0"><?php echo $com->real_name ?></h6>
                       <div class="d-flex align-items-center mb-2">
                         <p class="mb-0 fw-lighter fs-6">
-                          <?= view('components/datetime-diff', ['timestamp' => $com->updated]) ?>
+                          <?php echo view('components/datetime-diff', ['timestamp' => $com->updated]) ?>
                         </p>
                         <!--<a href="#!" class="link-muted ms-2"><i>
                   <svg xmlns=" http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
@@ -136,17 +136,17 @@ use Fisharebest\Webtrees\Tree;
                           </i>
                         </a>-->
                         <?php if (Auth::isManager($tree)) : ?>
-                          <form method="post" action="<?= e(route('module', ['module' => '_NewsMenu_', 'action' => 'DeleteComments', 'news_id' => $news_id, 'comments_id' => $com->comments_id, 'tree' => $tree->name()])) ?>">
-                            <button class="btn btn-link ms-2" type="submit" data-wt-confirm="<?= I18N::translate('Are you sure you want to delete “%s”?', e($com->comment)) ?>" onclick="return confirm(this.dataset.confirm);">
+                          <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'DeleteComments', 'news_id' => $news_id, 'comments_id' => $com->comments_id, 'tree' => $tree->name()])) ?>">
+                            <button class="btn btn-link ms-2" type="submit" data-wt-confirm="<?php echo I18N::translate('Are you sure you want to delete “%s”?', e($com->comment)) ?>" onclick="return confirm(this.dataset.confirm);">
                               <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
                                   <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
                                 </svg></i>
                             </button>
-                            <?= csrf_field() ?>
+                            <?php echo csrf_field() ?>
                           </form>
                         <?php endif; ?>
 
-                        <a class="com-like-button link-muted ms-2" href="javascript:void(0);" data-comments-id="<?= e($com->comments_id) ?>" data-liked="<?= e($com->like_exists != 0) ?>">
+                        <a class="com-like-button link-muted ms-2" href="javascript:void(0);" data-comments-id="<?php echo e($com->comments_id) ?>" data-liked="<?php echo e($com->like_exists != 0) ?>">
                           <?php if (e($com->like_exists != 0)) : ?>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-heart-fill" viewBox="0 0 16 16">
                               <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
@@ -157,13 +157,13 @@ use Fisharebest\Webtrees\Tree;
                             </svg>
                           <?php endif; ?>
                           <?php if ($com->likes_count > 0) : ?>
-                            <span id="com-like-count"><?= e($com->likes_count) ?></span>
+                            <span id="com-like-count"><?php echo e($com->likes_count) ?></span>
                           <?php endif; ?>
                         </a>
 
                       </div>
                       <p class="mb-0">
-                        <?= $com->comment ?>
+                        <?php echo $com->comment ?>
                       </p>
                     </div>
                   </div>
@@ -188,17 +188,17 @@ use Fisharebest\Webtrees\Tree;
                   <form method="post">
 
                     <textarea class="form-control" id="comment" name="comment" rows="2"></textarea>
-                    <label class="form-label" for="textAreaСomment"> <?= I18N::translate('Write a comment') ?></label>
+                    <label class="form-label" for="textAreaСomment"> <?php echo I18N::translate('Write a comment') ?></label>
                 </div>
               </div>
 
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
 
                 <button class="btn btn-primary mb-3" type="submit">
-                  <?= I18N::translate('Send') ?>
+                  <?php echo I18N::translate('Send') ?>
                 </button>
               </div>
-              <?= csrf_field() ?>
+              <?php echo csrf_field() ?>
               </form>
             <?php endif; ?>
 
@@ -212,7 +212,7 @@ use Fisharebest\Webtrees\Tree;
         <div class="card bg-light text-dark">
           <div class="card-body">
 
-            <h3 class="wt-page-title text-center fw-bold mt-2 mb-3"><?= I18N::translate('Latest news') ?></h3>
+            <h3 class="wt-page-title text-center fw-bold mt-2 mb-3"><?php echo I18N::translate('Latest news') ?></h3>
             <?php foreach ($articles as $n =>
               $article) : ?>
 
@@ -224,10 +224,10 @@ use Fisharebest\Webtrees\Tree;
                 </div>
 
                 <div class="col-9">
-                  <a href="<?= e(route('module', ['module' => '_NewsMenu_', 'action' => 'ShowNews', 'news_id' => $article->news_id, 'tree' => $tree->name()])) ?>" class="text-dark">
-                    <p class="mb-2"><strong><?= $article->subject ?></strong></p>
+                  <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'ShowNews', 'news_id' => $article->news_id, 'tree' => $tree->name()])) ?>" class="text-dark">
+                    <p class="mb-2"><strong><?php echo $article->subject ?></strong></p>
                     <p>
-                      <u><?= view('components/datetime', ['timestamp' =>
+                      <u><?php echo view('components/datetime', ['timestamp' =>
                           $article->updated]) ?></u>
                     </p>
                   </a>
@@ -250,12 +250,12 @@ use Fisharebest\Webtrees\Tree;
       var isLiked = $this.data('liked');
 
       if (isLiked) {
-        alert('<?= I18N::translate('Have you already put a like') ?>');
+        alert('<?php echo I18N::translate('Have you already put a like') ?>');
         return;
       }
 
       $.ajax({
-        url: '<?= e(route('module', ['module' => '_NewsMenu_', 'action' => 'LikeNews', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>',
+        url: '<?php echo e(route('module', ['module' => $module_name, 'action' => 'LikeNews', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>',
         type: 'GET',
         data: {
           news_id: newsId
@@ -281,12 +281,12 @@ use Fisharebest\Webtrees\Tree;
       var isLiked = $this.data('liked');
 
       if (isLiked) {
-        alert('<?= I18N::translate('Have you already put a like') ?>');
+        alert('<?php echo I18N::translate('Have you already put a like') ?>');
         return;
       }
 
       $.ajax({
-        url: '<?= e(route('module', ['module' => '_NewsMenu_', 'action' => 'LikeComments', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>',
+        url: '<?php echo e(route('module', ['module' => $module_name, 'action' => 'LikeComments', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>',
         type: 'GET',
         data: {
           comments_id: commentsId
@@ -311,5 +311,5 @@ use Fisharebest\Webtrees\Tree;
     width: 60px;
     height: 60px;
     margin-right: 10px;
-}
+  }
 </Style>

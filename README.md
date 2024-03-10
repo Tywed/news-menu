@@ -3,7 +3,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 ![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)
-![Latest Release](https://img.shields.io/badge/release-v0.2.1-blue)
+![Latest Release](https://img.shields.io/badge/release-v0.2.2-blue)
 
 
 
@@ -61,10 +61,9 @@ This section documents installation instructions for this module.
 
 1. Download the [latest release](https://github.com/tywed/news-menu/releases/latest).
 2. Unzip the package into your `webtrees/modules_v4` directory of your web server.
-3. Rename the folder to `NewsMenu`. It's safe to overwrite the respective directory if it already exists.
-4. Login to **webtrees** as administrator, go to <span class="pointer">Control Panel/Modules/Genealogy/Menus</span>,
+3. Login to **webtrees** as administrator, go to <span class="pointer">Control Panel/Modules/Genealogy/Menus</span>,
    and find the module. It will be called "News". Check if it has a tick for "Enabled".
-5. Finally, click SAVE, to complete the configuration.
+4. Finally, click SAVE, to complete the configuration.
 
 <a name="upgrade"></a>
 ## Upgrade

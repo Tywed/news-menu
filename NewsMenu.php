@@ -63,7 +63,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     public const CUSTOM_MODULE = 'News-Menu';
     public const CUSTOM_AUTHOR = 'Tywed';
     public const CUSTOM_WEBSITE = 'https://github.com/tywed/' . self::CUSTOM_MODULE . '/';
-    public const CUSTOM_VERSION = '0.2.1';
+    public const CUSTOM_VERSION = '0.2.2';
     public const CUSTOM_LAST = self::CUSTOM_WEBSITE . 'raw/main/latest-version.txt';
     public const CUSTOM_SUPPORT_URL = self::CUSTOM_WEBSITE . 'issues';
     public const SCHEMA_VERSION = 1;
@@ -190,6 +190,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
         return $this->viewResponse($this->name() . $page, [
             'title' => $this->title(),
+            'module_name'  => $this->name(),
             'tree' => $tree,
             'articles' => $articles,
             'limit' => $perPage,
@@ -443,6 +444,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
         $title = I18N::translate('News');
 
         return $this->viewResponse($this->name() . '::show', [
+            'module_name'  => $this->name(),
             'news_id' => $news_id,
             'subject' => $row->subject,
             'news_media'    => $media,

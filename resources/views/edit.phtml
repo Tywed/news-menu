@@ -20,95 +20,92 @@ use Fisharebest\Webtrees\Http\RequestHandlers\CreateMediaObjectModal;
 <div class="row">
     <div class="col-md-8 mx-auto">
 
-
-        <h2><?= $title ?></h2>
+        <h2><?php echo $title; ?></h2>
 
         <form method="post">
             <table>
                 <tr>
                     <th>
                         <label for="updated">
-                            <?= I18N::translate('UTC date and time') ?>
+                            <?php echo I18N::translate('UTC date and time'); ?>
                         </label>
                     </th>
                 <tr>
                 <tr>
                     <td>
-                        <input type="datetime-local" id="updated" class="form-control" name="updated" size="120" dir="auto" autofocus value="<?= e($updated) ?>">
+                        <input type="datetime-local" id="updated" class="form-control" name="updated" size="120" dir="auto" autofocus value="<?php echo e($updated); ?>">
                     </td>
                 </tr>
                 <tr>
                     <th>
                         <label for="subject">
-                            <?= I18N::translate('Title') ?>
+                            <?php echo I18N::translate('Title'); ?>
                         </label>
                     </th>
                 <tr>
                 <tr>
                     <td>
-                        <input required type="text" id="subject" class="form-control" name="subject" size="120" dir="auto" autofocus value="<?= e($subject) ?>">
+                        <input required type="text" id="subject" class="form-control" name="subject" size="120" dir="auto" autofocus value="<?php echo e($subject); ?>">
                     </td>
                 </tr>
 
                 <tr>
                     <th>
-                        <label for="Image" class="form-label"><?= I18N::translate('Photo (enter the name of the previously added media file)') ?></label>
+                        <label for="Image" class="form-label"><?php echo I18N::translate('Photo (enter the name of the previously added media file)'); ?></label>
                         <div class="col-sm-8 col-md-9 w-100">
-                            <?= view('components/select-media', ['name' => 'obje-xref', 'tree' => $tree, 'media' => $media]) ?>
+                            <?php echo view('components/select-media', ['name' => 'obje-xref', 'tree' => $tree, 'media' => $media]); ?>
                         </div>
                     </th>
                 <tr>
                 <tr>
                     <th class="text-end">
-                        <a href="#" data-wt-href="<?= e(route(CreateMediaObjectModal::class, ['tree' => $tree->name()])) ?>" data-bs-target="#wt-ajax-modal" data-bs-toggle="modal" data-bs-backdrop="static">
-                            <?= I18N::translate('Add new media object') ?>
-                            <span class="visually-hidden"><?= e($tree->title()) ?></span>
+                        <a href="#" data-wt-href="<?php echo e(route(CreateMediaObjectModal::class, ['tree' => $tree->name()])); ?>" data-bs-target="#wt-ajax-modal" data-bs-toggle="modal" data-bs-backdrop="static">
+                            <?php echo I18N::translate('Add new media object'); ?>
+                            <span class="visually-hidden"><?php echo e($tree->title()); ?></span>
                         </a>
-
                     </th>
                 <tr>
 
                 <tr>
                     <th>
                         <label for="brief">
-                            <?= I18N::translate('Description') ?>
+                            <?php echo I18N::translate('Description'); ?>
                         </label>
                     </th>
                 <tr>
                 <tr>
                     <td>
-                        <textarea id="brief" name="brief" maxlength="600" class="form-control" rows="6" dir="auto"><?= e($brief) ?></textarea>
+                        <textarea id="brief" name="brief" maxlength="600" class="form-control" rows="6" dir="auto"><?php echo e($brief); ?></textarea>
                     </td>
                 </tr>
 
                 <tr>
                     <th>
                         <label for="body">
-                            <?= I18N::translate('Content') ?>
+                            <?php echo I18N::translate('Content'); ?>
                         </label>
                     </th>
                 </tr>
                 <tr>
                     <td>
-                        <textarea id="body" name="body" class="html-edit form-control" rows="12" dir="auto"><?= e($body) ?></textarea>
+                        <textarea id="body" name="body" class="html-edit form-control" rows="12" dir="auto"><?php echo e($body); ?></textarea>
                     </td>
                 </tr>
 
                 <tr>
                     <td>
                         <button class="btn btn-primary" type="submit">
-                            <?= I18N::translate('save') ?>
+                            <?php echo I18N::translate('save'); ?>
                         </button>
 
-                        <a class="btn btn-secondary" href="<?= e(route(TreePage::class, ['tree' => $tree->name()])) ?>">
-                            <?= I18N::translate('cancel') ?>
+                        <a class="btn btn-secondary" href="<?php echo e(route(TreePage::class, ['tree' => $tree->name()])); ?>">
+                            <?php echo I18N::translate('cancel'); ?>
                         </a>
                     </td>
                 </tr>
             </table>
 
-
-            <?= csrf_field() ?>
+            <?php echo csrf_field(); ?>
         </form>
     </div>
 </div>
@@ -124,4 +121,4 @@ use Fisharebest\Webtrees\Http\RequestHandlers\CreateMediaObjectModal;
     }
 </script>
 
-<?= view('modals/ajax') ?>
+<?php echo view('modals/ajax'); ?>

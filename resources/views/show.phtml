@@ -30,7 +30,7 @@ use Fisharebest\Webtrees\Tree;
           </div>
           <!-- Media -->
           <div class="bg-image hover-overlay ripple rounded-0" data-mdb-ripple-color="light">
-            <? if (isset($news_media)) {
+            <?php if (isset($news_media)) {
               echo $news_media->displayImage(1000, 667, 'contain', ['class' => 'w-100 me-3']);
             }
             ?>
@@ -218,7 +218,7 @@ use Fisharebest\Webtrees\Tree;
 
               <div class="row mb-4 border-bottom pb-2">
                 <div class="col-3">
-                  <? if (isset($article->media_id)) {
+                  <?php if (isset($article->media_id)) {
                     echo $article->media_id->displayImage(100, 67, 'crop', ['class' => 'img-fluid shadow-1-strong rounded w-100']);
                   } ?>
                 </div>

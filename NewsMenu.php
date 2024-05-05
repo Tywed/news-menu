@@ -63,7 +63,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     public const CUSTOM_MODULE = 'News-Menu';
     public const CUSTOM_AUTHOR = 'Tywed';
     public const CUSTOM_WEBSITE = 'https://github.com/tywed/' . self::CUSTOM_MODULE . '/';
-    public const CUSTOM_VERSION = '0.2.2';
+    public const CUSTOM_VERSION = '0.2.3';
     public const CUSTOM_LAST = self::CUSTOM_WEBSITE . 'raw/main/latest-version.txt';
     public const CUSTOM_SUPPORT_URL = self::CUSTOM_WEBSITE . 'issues';
     public const SCHEMA_VERSION = 1;

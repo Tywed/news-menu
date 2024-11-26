@@ -2,8 +2,8 @@
 # webtrees module news menu
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
-![webtrees major version](https://img.shields.io/badge/webtrees-v2.1.x-green)
-![Latest Release](https://img.shields.io/badge/release-v0.2.3-blue)
+![webtrees major version](https://img.shields.io/badge/webtrees-v2.2.x-green)
+![Latest Release](https://img.shields.io/badge/release-v0.2.4-blue)
 
 
 
@@ -25,6 +25,8 @@ This Readme contains the following main sections
 ## Warning
 
 This module makes changes to the Webtrees database, the data entered through the module is not exported to GEDCOM files. Before installing the module on your main site, try to test it.
+
+The module only works with webtrees version 2.2.0 and higher. For version 2.1, use the [module version 0.2.3](https://github.com/Tywed/news-menu/releases/tag/v0.2.3)
 
 <a name="description"></a>
 ## Description
@@ -49,10 +51,10 @@ Screenshot of the news addition page
 <a name="requirements"></a>
 ## Requirements
 
-This module requires **webtrees** version 2.1 or later.
+This module requires **webtrees** version 2.2 or later.
 This module has the same requirements as [webtrees#system-requirements](https://github.com/fisharebest/webtrees#system-requirements).
 
-This module was tested with **webtrees** 2.1.17 version and all standarts themes.
+This module was tested with **webtrees** 2.2.0 version and all standarts themes.
 
 <a name="installation"></a>
 ## Installation

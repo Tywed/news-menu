@@ -4,6 +4,7 @@ namespace Tywed\Webtrees\Module\NewsMenu;
 
 use Fisharebest\Webtrees\Webtrees;
 use Illuminate\Support\Collection;
+use Fisharebest\Webtrees\Registry;
 
 use function str_contains;
 
@@ -14,25 +15,10 @@ if (defined("WT_MODULES_DIR")) {
     return;
 }
 
-$pattern = Webtrees::MODULES_DIR . '*/autoload.php';
-$filenames = glob($pattern, GLOB_NOSORT);
+require_once __DIR__ . '/autoload.php';
 
-Collection::make($filenames)
-    ->filter(static function (string $filename): bool {
-        // Special characters will break PHP variable names.
-        // This also allows us to ignore modules called "foo.example" and "foo.disable"
-        $module_name = basename(dirname($filename));
+// Use the directory name for the module name (most reliable method)
+$module = new NewsMenu();
+$module->setName(basename(__DIR__));
 
-        foreach (['.', ' ', '[', ']'] as $character) {
-            if (str_contains($module_name, $character)) {
-                return false;
-            }
-        }
-
-        return strlen($module_name) <= 30;
-    })
-    ->each(static function (string $filename): void {
-        require_once $filename;
-    });
-
-return new NewsMenu();
+return $module;

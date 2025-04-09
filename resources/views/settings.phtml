@@ -12,44 +12,135 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
 <p>
     <?php echo I18N::translate('Settings for the module'); ?>
 </p>
-<div class="mb-5">
-    <form method="post" class="row">
-        <fieldset class="row mb-4">
-            <legend class="col-form-label col-sm-7">
-                <?php echo I18N::translate('The order of the news module in the site menu (set the value to the desired, by default -1)'); ?>
-            </legend>
-            <div class="col-sm-2">
-                <input type="number" id="news_menu_order" class="form-control" name="news_menu_order" size="120" dir="auto" autofocus value="<?php echo e($news_menu_order); ?>">
-            </div>
-        </fieldset>
-        <fieldset class="row mb-4">
-            <legend class="col-form-label col-sm-7">
-                <?php echo I18N::translate('Number of news items displayed'); ?>
-            </legend>
-            <div class="col-sm-2">
-                <input type="number" id="limit_news" class="form-control" name="limit_news" size="120" dir="auto" autofocus value="<?php echo e($limit_news); ?>">
-            </div>
-        </fieldset>
-        <fieldset class="row mb-4">
-            <legend class="col-form-label col-sm-7">
-                <?php echo I18N::translate('Number of comments displayed'); ?>
-            </legend>
-            <div class="col-sm-2">
-                <input type="number" id="limit_comments" class="form-control" name="limit_comments" size="120" dir="auto" autofocus value="<?php echo e($limit_comments); ?>">
-            </div>
-        </fieldset>
 
+<!-- General Settings Form -->
+<div class="card wt-block mb-4">
+    <div class="card-header wt-block-header">
+        <h2 class="wt-page-title"><?php echo I18N::translate('General Settings'); ?></h2>
+    </div>
+    <div class="card-body">
+        <form method="post" class="row">
+            <fieldset class="row mb-4">
+                <legend class="col-form-label col-sm-7">
+                    <?php echo I18N::translate('The order of the news module in the site menu (set the value to the desired, by default -1)'); ?>
+                </legend>
+                <div class="col-sm-2">
+                    <input type="number" id="news_menu_order" class="form-control" name="news_menu_order" size="120" dir="auto" autofocus value="<?php echo e($news_menu_order); ?>">
+                </div>
+            </fieldset>
+            <fieldset class="row mb-4">
+                <legend class="col-form-label col-sm-7">
+                    <?php echo I18N::translate('Number of news items displayed'); ?>
+                </legend>
+                <div class="col-sm-2">
+                    <input type="number" id="limit_news" class="form-control" name="limit_news" size="120" dir="auto" autofocus value="<?php echo e($limit_news); ?>">
+                </div>
+            </fieldset>
+            <fieldset class="row mb-4">
+                <legend class="col-form-label col-sm-7">
+                    <?php echo I18N::translate('Number of comments displayed'); ?>
+                </legend>
+                <div class="col-sm-2">
+                    <input type="number" id="limit_comments" class="form-control" name="limit_comments" size="120" dir="auto" autofocus value="<?php echo e($limit_comments); ?>">
+                </div>
+            </fieldset>
+            <fieldset class="row mb-4">
+                <legend class="col-form-label col-sm-7">
+                    <?php echo I18N::translate('Minimum views for popular news'); ?>
+                </legend>
+                <div class="col-sm-2">
+                    <input type="number" id="min_views_popular" class="form-control" name="min_views_popular" size="120" dir="auto" autofocus value="<?php echo e($min_views_popular); ?>">
+                </div>
+            </fieldset>
 
-        <div class="row mb-3">
-            <div class="offset-sm-3 col-sm-9">
-                <button type="submit" class="btn btn-primary">
-                    <?php echo view('icons/save'); ?>
-                    <?php echo I18N::translate('save'); ?>
-                </button>
+            <div class="row mb-3">
+                <div class="offset-sm-3 col-sm-9">
+                    <button type="submit" class="btn btn-primary">
+                        <?php echo view('icons/save'); ?>
+                        <?php echo I18N::translate('save'); ?>
+                    </button>
+                </div>
+            </div>
+
+            <?php echo csrf_field(); ?>
+        </form>
+    </div>
+</div>
+
+<!-- Category Management -->
+<div class="card wt-block mb-4">
+    <div class="card-header wt-block-header">
+        <h2 class="wt-page-title"><?php echo I18N::translate('Category Management'); ?></h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="mb-4">
+                    <h3><?php echo I18N::translate('Add New Category'); ?></h3>
+                    <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'AddCategory'])); ?>">
+                        <div class="mb-3">
+                            <label for="category_name" class="form-label"><?php echo I18N::translate('Category Name'); ?></label>
+                            <input type="text" class="form-control" id="category_name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category_description" class="form-label"><?php echo I18N::translate('Description'); ?></label>
+                            <textarea class="form-control" id="category_description" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sort_order" class="form-label"><?php echo I18N::translate('Sort Order'); ?></label>
+                            <input type="number" class="form-control" id="sort_order" name="sort_order" value="0">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <?php echo view('icons/add'); ?>
+                            <?php echo I18N::translate('Add Category'); ?>
+                        </button>
+                        <?php echo csrf_field(); ?>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-md-7">
+                <h3><?php echo I18N::translate('Existing Categories'); ?></h3>
+                <?php if (!empty($categories)): ?>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm wt-table wt-table-sortable">
+                            <thead>
+                                <tr>
+                                    <th><?php echo I18N::translate('Category Name'); ?></th>
+                                    <th><?php echo I18N::translate('Description'); ?></th>
+                                    <th class="text-center"><?php echo I18N::translate('Sort Order'); ?></th>
+                                    <th class="text-center" style="width: 100px;"><?php echo I18N::translate('Actions'); ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($categories as $category): ?>
+                                <tr>
+                                    <td><?php echo e($category->getName()); ?></td>
+                                    <td><?php echo e($category->getDescription()); ?></td>
+                                    <td class="text-center"><?php echo e($category->getSortOrder()); ?></td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-1" role="group">
+                                            <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'EditCategory', 'category_id' => $category->getCategoryId()])); ?>" class="btn btn-primary btn-sm" title="<?php echo I18N::translate('Edit'); ?>">
+                                                <?php echo view('icons/edit'); ?>
+                                            </a>
+                                            <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'DeleteCategory'])); ?>" class="d-inline" onsubmit="return confirm('<?php echo I18N::translate('Are you sure you want to delete this category? All news in this category will remain but will be marked as uncategorized.'); ?>')">
+                                                <input type="hidden" name="category_id" value="<?php echo e($category->getCategoryId()); ?>">
+                                                <button type="submit" class="btn btn-danger btn-sm" title="<?php echo I18N::translate('Delete'); ?>">
+                                                    <?php echo view('icons/delete'); ?>
+                                                </button>
+                                                <?php echo csrf_field(); ?>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <p class="text-muted"><?php echo I18N::translate('No categories have been created yet.'); ?></p>
+                <?php endif; ?>
             </div>
         </div>
-
-        <?php echo csrf_field(); ?>
-    </form>
-</div>
+    </div>
 </div>

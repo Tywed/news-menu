@@ -1,0 +1,51 @@
+<?php
+
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
+
+?>
+
+<?php echo view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(ModulesAllPage::class) => I18N::translate('Modules'), $title]]); ?>
+
+<h1><?php echo $title; ?></h1>
+
+<div class="card wt-block">
+    <div class="card-header wt-block-header">
+        <h2 class="mb-0"><?php echo I18N::translate('Edit Category'); ?></h2>
+    </div>
+    <div class="card-body">
+        <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'EditCategory'])); ?>">
+            <div class="mb-3">
+                <label for="category_name" class="form-label"><?php echo I18N::translate('Category Name'); ?></label>
+                <input type="text" class="form-control" id="category_name" name="name" value="<?php echo e($category->getName()); ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="category_description" class="form-label"><?php echo I18N::translate('Description'); ?></label>
+                <textarea class="form-control" id="category_description" name="description" rows="3"><?php echo e($category->getDescription()); ?></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="sort_order" class="form-label"><?php echo I18N::translate('Sort Order'); ?></label>
+                <input type="number" class="form-control" id="sort_order" name="sort_order" value="<?php echo e($category->getSortOrder()); ?>">
+            </div>
+            <input type="hidden" name="category_id" value="<?php echo e($category->getCategoryId()); ?>">
+            
+            <div class="row">
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <?php echo view('icons/save'); ?>
+                        <?php echo I18N::translate('Save'); ?>
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'Admin'])); ?>" class="btn btn-secondary">
+                        <?php echo view('icons/cancel'); ?>
+                        <?php echo I18N::translate('Cancel'); ?>
+                    </a>
+                </div>
+            </div>
+            
+            <?php echo csrf_field(); ?>
+        </form>
+    </div>
+</div> 

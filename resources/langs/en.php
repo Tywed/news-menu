@@ -48,4 +48,12 @@ return [
     'Show All' => 'Show All',
     'more' => 'more',
     'Back to top' => 'Back to top',
+    'Settings' => 'Settings',
+    'No category' => 'No category', 
+    'Pin to top' => 'Pin to top',
+    'Pin this news to the top of the list' => 'Pin this news to the top of the list',
+    'Category' => 'Category',
+    'Title' => 'Title',
+    'Content' => 'Content',
+    'cancel' => 'cancel',
 ];

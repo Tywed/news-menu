@@ -48,4 +48,12 @@ return [
     'Show All' => 'Sýna allt',
     'more' => 'fleiri',
     'Back to top' => 'Til baka upp',
+    'Settings' => 'Stillingar',
+    'No category' => 'Enginn flokkur', 
+    'Pin to top' => 'Festa efst',
+    'Pin this news to the top of the list' => 'Festa þessa frétt efst á listann',
+    'Category' => 'Flokkur',
+    'Title' => 'Titill',
+    'Content' => 'Efni',
+    'cancel' => 'hætta við',
 ];

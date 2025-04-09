@@ -48,4 +48,12 @@ return [
     'Show All' => 'Zobrazit vše',
     'more' => 'více',
     'Back to top' => 'Zpět nahoru',
+    'Settings' => 'Nastavení',
+    'No category' => 'Žádná kategorie', 
+    'Pin to top' => 'Připnout nahoru',
+    'Pin this news to the top of the list' => 'Připnout tuto zprávu na vrchol seznamu',
+    'Category' => 'Kategorie',
+    'Title' => 'Název',
+    'Content' => 'Obsah',
+    'cancel' => 'zrušit',
 ]; 

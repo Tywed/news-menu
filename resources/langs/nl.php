@@ -48,4 +48,12 @@ return [
     'Show All' => 'Alles weergeven',
     'more' => 'meer',
     'Back to top' => 'Terug naar boven',
+    'Settings' => 'Instellingen',
+    'No category' => 'Geen categorie', 
+    'Pin to top' => 'Vastpinnen aan de bovenkant',
+    'Pin this news to the top of the list' => 'Pin dit nieuwsbericht vast aan de bovenkant van de lijst',
+    'Category' => 'Categorie',
+    'Title' => 'Titel',
+    'Content' => 'Inhoud',
+    'cancel' => 'annuleren',
 ];

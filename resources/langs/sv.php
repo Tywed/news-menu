@@ -48,4 +48,12 @@ return [
     'Show All' => 'Visa alla',
     'more' => 'mer',
     'Back to top' => 'Tillbaka till toppen',
+    'Settings' => 'Inställningar',
+    'No category' => 'Ingen kategori', 
+    'Pin to top' => 'Nåla fast högst upp',
+    'Pin this news to the top of the list' => 'Nåla fast den här nyheten högst upp i listan',
+    'Category' => 'Kategori',
+    'Title' => 'Titel',
+    'Content' => 'Innehåll',
+    'cancel' => 'avbryt',
 ]; 

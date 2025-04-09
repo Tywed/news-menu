@@ -48,4 +48,12 @@ return [
     'Show All' => 'Vis alle',
     'more' => 'mere',
     'Back to top' => 'Tilbage til toppen',
+    'Settings' => 'Indstillinger',
+    'No category' => 'Ingen kategori', 
+    'Pin to top' => 'Fastgør til toppen',
+    'Pin this news to the top of the list' => 'Fastgør denne nyhed til toppen af listen',
+    'Category' => 'Kategori',
+    'Title' => 'Titel',
+    'Content' => 'Indhold',
+    'cancel' => 'annuller',
 ]; 

@@ -48,6 +48,14 @@ return [
     'Show All' => 'Показать все',
     'more' => 'ещё',
     'Back to top' => 'Наверх',
+    'Settings' => 'Настройки',
+    'No category' => 'Без категории', 
+    'Pin to top' => 'Закрепить вверху',
+    'Pin this news to the top of the list' => 'Закрепить эту новость вверху списка',
+    'Category' => 'Категория',
+    'Title' => 'Заголовок',
+    'Content' => 'Содержание',
+    'cancel' => 'отмена',
 ];
 
 

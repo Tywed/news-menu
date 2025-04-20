@@ -259,6 +259,7 @@ class NewsRepository
     ): void {
         DB::table('news')
             ->where('news_id', '=', $news->getNewsId())
+            ->where('gedcom_id', '=', $news->getGedcomId())
             ->update([
                 'subject' => $subject,
                 'brief' => $brief,

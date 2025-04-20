@@ -17,6 +17,7 @@ class News
     private ?string $media_id;
     private Carbon $updated;
     private ?int $category_id;
+    private string $languages;
     private bool $is_pinned;
     private int $view_count;
 
@@ -29,6 +30,7 @@ class News
         ?string $media_id,
         Carbon $updated,
         ?int $category_id = null,
+        string $languages = '',
         bool $is_pinned = false,
         int $view_count = 0
     ) {
@@ -40,6 +42,7 @@ class News
         $this->media_id = $media_id;
         $this->updated = $updated;
         $this->category_id = $category_id;
+        $this->languages = $languages;
         $this->is_pinned = $is_pinned;
         $this->view_count = $view_count;
     }
@@ -82,6 +85,16 @@ class News
     public function getCategoryId(): ?int
     {
         return $this->category_id;
+    }
+
+    public function getLanguages(): string
+    {
+        return $this->languages;
+    }
+
+    public function getLanguagesArray(): array
+    {
+        return $this->languages ? explode(',', $this->languages) : [];
     }
 
     public function isPinned(): bool

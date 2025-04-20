@@ -29,6 +29,7 @@ class NewsRepository
             $row->media_id,
             Carbon::parse($row->updated),
             $row->category_id ?? null,
+            $row->languages ?? '',
             (bool)($row->is_pinned ?? false),
             (int)($row->view_count ?? 0)
         );
@@ -55,6 +56,7 @@ class NewsRepository
                 $row->media_id,
                 Carbon::parse($row->updated),
                 $row->category_id ?? null,
+                $row->languages ?? '',
                 (bool)($row->is_pinned ?? false),
                 (int)($row->view_count ?? 0)
             );
@@ -131,6 +133,7 @@ class NewsRepository
                 $row->media_id,
                 Carbon::parse($row->updated),
                 $row->category_id ?? null,
+                $row->languages ?? '',
                 (bool)($row->is_pinned ?? false),
                 (int)($row->view_count ?? 0)
             );
@@ -170,6 +173,7 @@ class NewsRepository
                 $row->media_id,
                 Carbon::parse($row->updated),
                 $row->category_id ?? null,
+                $row->languages ?? '',
                 (bool)($row->is_pinned ?? false),
                 (int)($row->view_count ?? 0)
             );
@@ -208,12 +212,12 @@ class NewsRepository
         ?string $media_id, 
         ?Carbon $updated = null,
         ?int $categoryId = null,
-        bool $isPinned = false
+        bool $isPinned = false,
+        string $languages = ''
     ): News {
-        if ($updated === null) {
-            $updated = Carbon::now();
-        }
+        $updated = $updated ?? Carbon::now();
 
+        // Create a new News record
         $news_id = DB::table('news')->insertGetId([
             'gedcom_id' => $tree->id(),
             'subject' => $subject,
@@ -222,6 +226,7 @@ class NewsRepository
             'media_id' => $media_id,
             'updated' => $updated,
             'category_id' => $categoryId,
+            'languages' => $languages,
             'is_pinned' => $isPinned,
             'view_count' => 0,
         ]);
@@ -235,6 +240,7 @@ class NewsRepository
             $media_id,
             $updated,
             $categoryId,
+            $languages,
             $isPinned,
             0
         );
@@ -248,11 +254,11 @@ class NewsRepository
         ?string $media_id, 
         Carbon $updated,
         ?int $categoryId = null,
-        bool $isPinned = false
+        bool $isPinned = false,
+        string $languages = ''
     ): void {
         DB::table('news')
             ->where('news_id', '=', $news->getNewsId())
-            ->where('gedcom_id', '=', $news->getGedcomId())
             ->update([
                 'subject' => $subject,
                 'brief' => $brief,
@@ -260,6 +266,7 @@ class NewsRepository
                 'media_id' => $media_id,
                 'updated' => $updated,
                 'category_id' => $categoryId,
+                'languages' => $languages,
                 'is_pinned' => $isPinned,
             ]);
     }

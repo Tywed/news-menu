@@ -33,6 +33,7 @@ use Tywed\Webtrees\Module\NewsMenu\Repositories\CategoryRepository;
 use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\Services\DatabaseService;
 use Tywed\Webtrees\Module\NewsMenu\Controllers\CategoryController;
+use Fisharebest\Webtrees\Auth;
 
 /**
  * News Menu Module
@@ -49,10 +50,10 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     public const CUSTOM_MODULE = 'News-Menu';
     public const CUSTOM_AUTHOR = 'Tywed';
     public const CUSTOM_WEBSITE = 'https://github.com/tywed/' . self::CUSTOM_MODULE . '/';
-    public const CUSTOM_VERSION = '0.3';
+    public const CUSTOM_VERSION = '0.3.1';
     public const CUSTOM_LAST = self::CUSTOM_WEBSITE . 'raw/main/latest-version.txt';
     public const CUSTOM_SUPPORT_URL = self::CUSTOM_WEBSITE . 'issues';
-    public const SCHEMA_VERSION = 2;
+    public const SCHEMA_VERSION = 3;
     public const SETTING_SCHEMA_NAME = 'NEWS_SCHEMA_VERSION';
 
     private NewsController $newsController;
@@ -362,6 +363,9 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
             'limit_news' => $this->getPreference('limit_news', '5'),
             'limit_comments' => $this->getPreference('limit_comments', '5'),
             'min_views_popular' => $this->getPreference('min_views_popular', '5'),
+            'min_role_news' => $this->getPreference('min_role_news', 'manager'),
+            'min_role_comments' => $this->getPreference('min_role_comments', 'editor'),
+            'min_role_view_comments' => $this->getPreference('min_role_view_comments', 'visitor'),
             'categories' => $categories,
             'module_name' => $this->name(),
         ]);
@@ -381,6 +385,9 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
         $this->setPreference('limit_news', $params['limit_news']);
         $this->setPreference('limit_comments', $params['limit_comments']);
         $this->setPreference('min_views_popular', $params['min_views_popular']);
+        $this->setPreference('min_role_news', $params['min_role_news'] ?? 'manager');
+        $this->setPreference('min_role_comments', $params['min_role_comments'] ?? 'editor');
+        $this->setPreference('min_role_view_comments', $params['min_role_view_comments'] ?? 'visitor');
 
         $message = I18N::translate('The preferences for the module " %s " have been updated.', $this->title());
         FlashMessages::addMessage($message, 'success');
@@ -441,5 +448,74 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
             'module' => $this->name(),
             'action' => 'Admin',
         ]);
+    }
+
+    /**
+     * Check if the user can edit news
+     * 
+     * @param Tree $tree
+     * @return boolean
+     */
+    public function canEditNews(Tree $tree): bool
+    {
+        $min_role = $this->getPreference('min_role_news', 'manager');
+        
+        switch ($min_role) {
+            case 'editor':
+                return Auth::isEditor($tree);
+            case 'moderator':
+                return Auth::isModerator($tree);
+            case 'manager':
+            default:
+                return Auth::isManager($tree);
+        }
+    }
+
+    /**
+     * Check if the user can add comments
+     * 
+     * @param Tree $tree
+     * @return boolean
+     */
+    public function canAddComments(Tree $tree): bool
+    {
+        $min_role = $this->getPreference('min_role_comments', 'editor');
+        
+        switch ($min_role) {
+            case 'editor':
+                return Auth::isEditor($tree);
+            case 'moderator':
+                return Auth::isModerator($tree);
+            case 'manager':
+                return Auth::isManager($tree);
+            default:
+                return Auth::isEditor($tree);
+        }
+    }
+
+    /**
+     * Check if the user can view comments
+     * 
+     * @param Tree $tree
+     * @return boolean
+     */
+    public function canViewComments(Tree $tree): bool
+    {
+        $min_role = $this->getPreference('min_role_view_comments', 'visitor');
+        
+        switch ($min_role) {
+            case 'visitor':
+                return true;
+            case 'member':
+                return Auth::isMember($tree);
+            case 'editor':
+                return Auth::isEditor($tree);
+            case 'moderator':
+                return Auth::isModerator($tree);
+            case 'manager':
+                return Auth::isManager($tree);
+            default:
+                return true;
+        }
     }
 } 

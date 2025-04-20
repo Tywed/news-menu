@@ -56,9 +56,9 @@ class CommentController
         $tree = Validator::attributes($request)->tree();
         $user_id = Auth::id();
         
-        // Guest users cannot comment
-        if ($user_id === null) {
-            throw new HttpAccessDeniedException(I18N::translate('You must be logged in to add comments.'));
+        // Guest users cannot comment or users without permission
+        if ($user_id === null || !$this->module->canAddComments($tree)) {
+            throw new HttpAccessDeniedException(I18N::translate('You do not have permission to add comments.'));
         }
         
         $news_id = Validator::queryParams($request)->integer('news_id');
@@ -96,7 +96,7 @@ class CommentController
         $news_id = Validator::queryParams($request)->integer('news_id');
         $comments_id = Validator::queryParams($request)->integer('comments_id');
 
-        if (!Auth::isManager($tree)) {
+        if (!$this->module->canEditNews($tree)) {
             throw new HttpAccessDeniedException();
         }
 

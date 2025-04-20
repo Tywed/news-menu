@@ -59,16 +59,28 @@ class NewsController
         $totalArticles = $this->newsService->count($tree);
         $articles = $this->ensureCollection($this->newsService->findAll($tree, $limit, $offset));
         
+        $currentLanguage = \Fisharebest\Webtrees\I18N::languageTag();
+        $articles = $articles->filter(function($article) use ($currentLanguage) {
+            $languages = $article->getLanguagesArray();
+            return empty($languages) || in_array($currentLanguage, $languages);
+        });
+        
         // Get categories for the view
         $categories = $this->newsService->getAllCategories();
         
         // Try to get popular articles
         $minViews = (int)$this->module->getPreference('min_views_popular', '5');
         $popularArticles = $this->ensureCollection($this->newsService->findPopular($tree, 3, $minViews));
+        
+        $popularArticles = $popularArticles->filter(function($article) use ($currentLanguage) {
+            $languages = $article->getLanguagesArray();
+            return empty($languages) || in_array($currentLanguage, $languages);
+        });
 
         return $this->viewResponse($this->module->name() . '::page-news', [
             'title' => I18N::translate('News'),
             'module_name' => $this->module->name(),
+            'module' => $this->module,
             'tree' => $tree,
             'articles' => $articles,
             'limit' => $limit,
@@ -143,9 +155,32 @@ class NewsController
         
         // Get the author of the news (for now using a placeholder)
         $author = 'Administrator';
+        
+        // Фильтрация боковых блоков статей по текущему языку пользователя
+        $currentLanguage = \Fisharebest\Webtrees\I18N::languageTag();
+        $articles = $articles->filter(function($article) use ($currentLanguage, $news_id) {
+            // Исключаем текущую новость
+            if ($article->getNewsId() === $news_id) {
+                return false;
+            }
+            $languages = $article->getLanguagesArray();
+            // Если языки не указаны, показываем для всех
+            return empty($languages) || in_array($currentLanguage, $languages);
+        });
+        
+        // Также фильтруем популярные статьи по языку
+        $popularArticles = $popularArticles->filter(function($article) use ($currentLanguage, $news_id) {
+            // Исключаем текущую новость
+            if ($article->getNewsId() === $news_id) {
+                return false;
+            }
+            $languages = $article->getLanguagesArray();
+            return empty($languages) || in_array($currentLanguage, $languages);
+        });
 
         return $this->viewResponse($this->module->name() . '::show', [
             'module_name' => $this->module->name(),
+            'module' => $this->module,
             'news_id' => $news_id,
             'subject' => $news->getSubject(),
             'news_media' => $news->getMedia($tree),
@@ -175,7 +210,7 @@ class NewsController
     {
         $tree = Validator::attributes($request)->tree();
 
-        if (!Auth::isManager($tree)) {
+        if (!$this->module->canEditNews($tree)) {
             throw new HttpAccessDeniedException();
         }
 
@@ -190,9 +225,11 @@ class NewsController
             }
 
             $media = $news->getMedia($tree);
+            $languages = $news->getLanguagesArray();
         } else {
             $news = null;
             $media = null;
+            $languages = [];
         }
 
         $title = I18N::translate('Add/edit a journal/news entry');
@@ -209,6 +246,7 @@ class NewsController
             'category_id' => $news ? $news->getCategoryId() : null,
             'categories' => $categories,
             'is_pinned' => $news ? $news->isPinned() : false,
+            'languages' => $languages,
         ]);
     }
 
@@ -216,7 +254,7 @@ class NewsController
     {
         $tree = Validator::attributes($request)->tree();
 
-        if (!Auth::isManager($tree)) {
+        if (!$this->module->canEditNews($tree)) {
             throw new HttpAccessDeniedException();
         }
 
@@ -232,6 +270,10 @@ class NewsController
         $category_id = $category_id_raw === '' ? null : (int)$category_id_raw;
         
         $is_pinned = (bool)Validator::parsedBody($request)->integer('is_pinned', 0);
+        
+        // Get selected languages
+        $languages = Validator::parsedBody($request)->array('languages', []);
+        $languages_str = implode(',', $languages);
 
         if ($news_id !== 0) {
             $news = $this->newsService->find($news_id, $tree);
@@ -243,7 +285,8 @@ class NewsController
                 $media_id, 
                 Carbon::parse($updated),
                 $category_id,
-                $is_pinned
+                $is_pinned,
+                $languages_str
             );
         } else {
             $this->newsService->create(
@@ -254,7 +297,8 @@ class NewsController
                 $media_id, 
                 Carbon::parse($updated),
                 $category_id,
-                $is_pinned
+                $is_pinned,
+                $languages_str
             );
         }
 
@@ -272,7 +316,7 @@ class NewsController
         $tree = Validator::attributes($request)->tree();
         $news_id = Validator::queryParams($request)->integer('news_id');
 
-        if (!Auth::isManager($tree)) {
+        if (!$this->module->canEditNews($tree)) {
             throw new HttpAccessDeniedException();
         }
 
@@ -321,6 +365,15 @@ class NewsController
 
         $totalArticles = $this->newsService->countByCategory($tree, $category_id);
         $articles = $this->ensureCollection($this->newsService->findByCategory($tree, $category_id, $limit, $offset));
+        
+        // Фильтрация статей по текущему языку пользователя
+        $currentLanguage = \Fisharebest\Webtrees\I18N::languageTag();
+        $articles = $articles->filter(function($article) use ($currentLanguage) {
+            $languages = $article->getLanguagesArray();
+            // Если языки не указаны, показываем для всех
+            return empty($languages) || in_array($currentLanguage, $languages);
+        });
+        
         $categories = $this->newsService->getAllCategories();
         
         // Find the current category
@@ -339,6 +392,7 @@ class NewsController
         return $this->viewResponse($this->module->name() . '::page-news', [
             'title' => $currentCategory->getName(),
             'module_name' => $this->module->name(),
+            'module' => $this->module,
             'tree' => $tree,
             'articles' => $articles,
             'limit' => $limit,
@@ -360,7 +414,7 @@ class NewsController
         $tree = Validator::attributes($request)->tree();
         $news_id = Validator::queryParams($request)->integer('news_id');
 
-        if (!Auth::isManager($tree)) {
+        if (!$this->module->canEditNews($tree)) {
             throw new HttpAccessDeniedException();
         }
 

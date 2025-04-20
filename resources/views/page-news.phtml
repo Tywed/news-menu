@@ -23,7 +23,7 @@ use Illuminate\Support\Collection;
                 </h2>
 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
-                    <?php if (Auth::isManager($tree)) : ?>
+                    <?php if ($module->canEditNews($tree)) : ?>
                         <a class="btn btn-primary" href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'EditNews', 'tree' => $tree->name()])); ?>">
                             <?php echo I18N::translate('Add a news article'); ?>
                         </a>
@@ -93,7 +93,7 @@ use Illuminate\Support\Collection;
                                         ?>
                                     </p>
 
-                                    <?php if (Auth::isManager($tree)) : ?>
+                                    <?php if ($module->canEditNews($tree)) : ?>
                                         <hr />
                                         <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'DeleteNews', 'news_id' => $article->getNewsId(), 'tree' => $tree->name()])); ?>" class="d-inline">
                                             <a class="btn btn-link" href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'EditNews', 'news_id' => $article->getNewsId(), 'tree' => $tree->name()])); ?>">

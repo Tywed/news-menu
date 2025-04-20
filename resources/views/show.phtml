@@ -61,7 +61,7 @@ use Fisharebest\Webtrees\Registry;
                   </span>
                 <?php endif; ?>
 
-                <?php if (Auth::isManager($tree)): ?>
+                <?php if ($module->canEditNews($tree)): ?>
                   <a class="btn btn-link p-0" style="margin-right: 4px;" href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'TogglePinned', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>">
                     <?php if ($is_pinned): ?>
                       <i class="bi bi-pin-angle-fill text-danger"></i>
@@ -92,7 +92,7 @@ use Fisharebest\Webtrees\Registry;
                 </div>
               </div>
 
-              <?php if (Auth::isManager($tree)) : ?>
+              <?php if ($module->canEditNews($tree)) : ?>
                 <hr />
                 <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'DeleteNews', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>">
                   <a class="btn btn-link" href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'EditNews', 'news_id' => $news_id, 'tree' => $tree->name()])) ?>">
@@ -153,7 +153,7 @@ use Fisharebest\Webtrees\Registry;
                 </a>
               </div>
 
-              <?php if (Auth::isMember($tree)) : ?>
+              <?php if ($module->canViewComments($tree)) : ?>
 
                 <?php 
                 // Используем лимит комментариев из настроек
@@ -192,7 +192,7 @@ use Fisharebest\Webtrees\Registry;
                             <?php endif; ?>
                           </a>
                           
-                          <?php if (Auth::isManager($tree)) : ?>
+                          <?php if ($module->canEditNews($tree)) : ?>
                             <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'DeleteComments', 'news_id' => $news_id, 'comments_id' => $com->getCommentsId(), 'tree' => $tree->name()])) ?>">
                               <button class="btn btn-sm p-0 text-danger" type="submit" style="margin-top: -7px;" data-wt-confirm="<?php echo I18N::translate('Are you sure you want to delete "%s"?', e($com->getComment())) ?>" onclick="return confirm('<?php echo I18N::translate('Are you sure you want to delete "%s"?', e($com->getComment())) ?>');">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
@@ -218,6 +218,7 @@ use Fisharebest\Webtrees\Registry;
                 <?php endif; ?>
 
                 <!-- Comment submission form -->
+                <?php if ($module->canAddComments($tree)) : ?>
                 <div class="mt-3">
                   <form method="post">
                     <div class="d-flex mb-3 align-items-start">
@@ -242,6 +243,7 @@ use Fisharebest\Webtrees\Registry;
                     <?php echo csrf_field() ?>
                   </form>
                 </div>
+                <?php endif; ?>
               <?php endif; ?>
 
 

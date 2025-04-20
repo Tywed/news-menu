@@ -56,6 +56,18 @@ return [
     'Title' => 'Заголовок',
     'Content' => 'Содержание',
     'cancel' => 'отмена',
+    'Show this news for which languages' => 'Показывать эту новость для каких языков',
+    'If no language is selected, the news will be shown for all languages.' => 'Если язык не выбран, новость будет отображаться для всех языков.',
+    'Show/hide language selection' => 'Показать/скрыть выбор языков',
+    'Minimum role for editing and creating news' => 'Минимальная роль для редактирования и создания новостей',
+    'Minimum role for adding comments' => 'Минимальная роль для добавления комментариев',
+    'Minimum role to view comments' => 'Минимальная роль для просмотра комментариев',
+    'Editor' => 'Редактор',
+    'Moderator' => 'Модератор',
+    'Manager' => 'Менеджер',
+    'Visitor' => 'Посетитель',
+    'Member' => 'Участник',
+    'You do not have permission to add comments.' => 'У вас нет прав для добавления комментариев.',
 ];
 
 

@@ -53,6 +53,69 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                 </div>
             </fieldset>
 
+            <fieldset class="row mb-4">
+                <legend class="col-form-label col-sm-7">
+                    <?php echo I18N::translate('Minimum role for editing and creating news'); ?>
+                </legend>
+                <div class="col-sm-4">
+                    <select class="form-select" name="min_role_news">
+                        <option value="editor" <?php echo ($min_role_news ?? 'manager') === 'editor' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Editor'); ?>
+                        </option>
+                        <option value="moderator" <?php echo ($min_role_news ?? 'manager') === 'moderator' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Moderator'); ?>
+                        </option>
+                        <option value="manager" <?php echo ($min_role_news ?? 'manager') === 'manager' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Manager'); ?>
+                        </option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <fieldset class="row mb-4">
+                <legend class="col-form-label col-sm-7">
+                    <?php echo I18N::translate('Minimum role for adding comments'); ?>
+                </legend>
+                <div class="col-sm-4">
+                    <select class="form-select" name="min_role_comments">
+                        <option value="editor" <?php echo ($min_role_comments ?? 'editor') === 'editor' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Editor'); ?>
+                        </option>
+                        <option value="moderator" <?php echo ($min_role_comments ?? 'editor') === 'moderator' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Moderator'); ?>
+                        </option>
+                        <option value="manager" <?php echo ($min_role_comments ?? 'editor') === 'manager' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Manager'); ?>
+                        </option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <fieldset class="row mb-4">
+                <legend class="col-form-label col-sm-7">
+                    <?php echo I18N::translate('Minimum role to view comments'); ?>
+                </legend>
+                <div class="col-sm-4">
+                    <select class="form-select" name="min_role_view_comments">
+                        <option value="visitor" <?php echo ($min_role_view_comments ?? 'visitor') === 'visitor' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Visitor'); ?>
+                        </option>
+                        <option value="member" <?php echo ($min_role_view_comments ?? 'visitor') === 'member' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Member'); ?>
+                        </option>
+                        <option value="editor" <?php echo ($min_role_view_comments ?? 'visitor') === 'editor' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Editor'); ?>
+                        </option>
+                        <option value="moderator" <?php echo ($min_role_view_comments ?? 'visitor') === 'moderator' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Moderator'); ?>
+                        </option>
+                        <option value="manager" <?php echo ($min_role_view_comments ?? 'visitor') === 'manager' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Manager'); ?>
+                        </option>
+                    </select>
+                </div>
+            </fieldset>
+
             <div class="row mb-3">
                 <div class="offset-sm-3 col-sm-9">
                     <button type="submit" class="btn btn-primary">

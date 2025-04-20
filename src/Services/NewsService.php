@@ -103,7 +103,8 @@ class NewsService
         ?string $media_id,
         ?Carbon $updated = null,
         ?int $categoryId = null,
-        bool $isPinned = false
+        bool $isPinned = false,
+        string $languages = ''
     ): News {
         $subject = $this->htmlService->sanitize($subject);
         $brief = $this->htmlService->sanitize($brief);
@@ -117,7 +118,8 @@ class NewsService
             $media_id, 
             $updated,
             $categoryId,
-            $isPinned
+            $isPinned,
+            $languages
         );
     }
 
@@ -129,7 +131,8 @@ class NewsService
         ?string $media_id,
         Carbon $updated,
         ?int $categoryId = null,
-        bool $isPinned = false
+        bool $isPinned = false,
+        string $languages = ''
     ): void {
         $subject = $this->htmlService->sanitize($subject);
         $brief = $this->htmlService->sanitize($brief);
@@ -143,7 +146,8 @@ class NewsService
             $media_id, 
             $updated,
             $categoryId,
-            $isPinned
+            $isPinned,
+            $languages
         );
     }
 

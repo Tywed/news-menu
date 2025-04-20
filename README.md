@@ -2,7 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 ![webtrees major version](https://img.shields.io/badge/webtrees-v2.2.x-green)
-![Latest Release](https://img.shields.io/badge/release-v0.3-blue)
+![Latest Release](https://img.shields.io/badge/release-v0.3.1-blue)
 
 This [webtrees](https://www.webtrees.net/) custom module add an extra item to the main menu as a link to a webtrees news. 
 

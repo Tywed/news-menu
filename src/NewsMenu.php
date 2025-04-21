@@ -34,6 +34,7 @@ use Fisharebest\Webtrees\Validator;
 use Fisharebest\Webtrees\Services\DatabaseService;
 use Tywed\Webtrees\Module\NewsMenu\Controllers\CategoryController;
 use Fisharebest\Webtrees\Auth;
+use Tywed\Webtrees\Module\NewsMenu\Helpers\AppHelper;
 
 /**
  * News Menu Module
@@ -134,7 +135,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
         // Run migrations
         $migrations_namespace = __NAMESPACE__ . '\Migrations';
         
-        Registry::container()->get(MigrationService::class)->updateSchema(
+        AppHelper::get(MigrationService::class)->updateSchema(
             $migrations_namespace,
             self::SETTING_SCHEMA_NAME, 
             self::SCHEMA_VERSION

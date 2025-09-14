@@ -57,6 +57,96 @@ class CategoryRepository
     }
 
     /**
+     * Get all translations for a category as language => name
+     */
+    public function getTranslations(int $categoryId): array
+    {
+        if (!DB::schema()->hasTable('news_category_translations')) {
+            return [];
+        }
+
+        $rows = DB::table('news_category_translations')
+            ->where('category_id', '=', $categoryId)
+            ->get();
+
+        $translations = [];
+        foreach ($rows as $row) {
+            $translations[$row->language] = $row->name;
+        }
+
+        return $translations;
+    }
+
+    /**
+     * Get list of language codes with existing translation
+     */
+    public function getTranslationLanguages(int $categoryId): array
+    {
+        return array_keys($this->getTranslations($categoryId));
+    }
+
+    /**
+     * Create or update a translation
+     */
+    public function upsertTranslation(int $categoryId, string $language, string $name): void
+    {
+        if (!DB::schema()->hasTable('news_category_translations')) {
+            return;
+        }
+
+        DB::table('news_category_translations')->updateOrInsert(
+            ['category_id' => $categoryId, 'language' => $language],
+            ['name' => $name]
+        );
+    }
+
+    /**
+     * Delete a translation
+     */
+    public function deleteTranslation(int $categoryId, string $language): void
+    {
+        if (!DB::schema()->hasTable('news_category_translations')) {
+            return;
+        }
+
+        DB::table('news_category_translations')
+            ->where('category_id', '=', $categoryId)
+            ->where('language', '=', $language)
+            ->delete();
+    }
+
+    /**
+     * Resolve translated name by language with fallbacks
+     */
+    public function resolveName(Category $category, string $language): string
+    {
+        if (!DB::schema()->hasTable('news_category_translations')) {
+            return $category->getName();
+        }
+
+        $exact = DB::table('news_category_translations')
+            ->where('category_id', '=', $category->getCategoryId())
+            ->where('language', '=', $language)
+            ->value('name');
+        if ($exact) {
+            return $exact;
+        }
+
+        if (strpos($language, '-') !== false) {
+            $base = substr($language, 0, strpos($language, '-'));
+            $baseName = DB::table('news_category_translations')
+                ->where('category_id', '=', $category->getCategoryId())
+                ->where('language', '=', $base)
+                ->value('name');
+            if ($baseName) {
+                return $baseName;
+            }
+        }
+
+        return $category->getName();
+    }
+
+    /**
      * Create a new category
      *
      * @param string $name

@@ -186,6 +186,9 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                                             <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'EditCategory', 'category_id' => $category->getCategoryId()])); ?>" class="btn btn-primary btn-sm" title="<?php echo I18N::translate('Edit'); ?>">
                                                 <?php echo view('icons/edit'); ?>
                                             </a>
+                                            <button type="button" class="btn btn-secondary btn-sm" title="<?php echo I18N::translate('Translations'); ?>" data-bs-toggle="modal" data-bs-target="#translations-modal" data-category-id="<?php echo e($category->getCategoryId()); ?>" data-category-name="<?php echo e($category->getName()); ?>">
+                                                <?php echo I18N::translate('Translations'); ?>
+                                            </button>
                                             <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'DeleteCategory'])); ?>" class="d-inline" onsubmit="return confirm('<?php echo I18N::translate('Are you sure you want to delete this category? All news in this category will remain but will be marked as uncategorized.'); ?>')">
                                                 <input type="hidden" name="category_id" value="<?php echo e($category->getCategoryId()); ?>">
                                                 <button type="submit" class="btn btn-danger btn-sm" title="<?php echo I18N::translate('Delete'); ?>">
@@ -206,4 +209,171 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
             </div>
         </div>
     </div>
+</div>
+
+<!-- Translations Modal -->
+<div class="modal fade" id="translations-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><?php echo I18N::translate('Manage translations'); ?></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="translation-form">
+            <input type="hidden" name="category_id" id="tr-category-id" value="">
+            <div class="mb-3">
+                <label for="tr-language" class="form-label"><?php echo I18N::translate('Language'); ?></label>
+                <select class="form-select" id="tr-language" name="language">
+                    <?php /** список языков из webtrees */ ?>
+                    <?php foreach (\Fisharebest\Webtrees\I18N::activeLocales() as $locale): ?>
+                        <option value="<?php echo e($locale->languageTag()); ?>"><?php echo e($locale->endonym()); ?> (<?php echo e($locale->languageTag()); ?>)</option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="tr-name" class="form-label"><?php echo I18N::translate('Name'); ?></label>
+                <input type="text" class="form-control" id="tr-name" name="name" required>
+            </div>
+        </form>
+        <div class="alert alert-danger d-none" id="tr-error"></div>
+        <div class="alert alert-success d-none" id="tr-success"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" id="tr-delete"><?php echo I18N::translate('Delete'); ?></button>
+        <button type="button" class="btn btn-primary" id="tr-save"><?php echo I18N::translate('Save'); ?></button>
+      </div>
+    </div>
+  </div>
+  <?php echo csrf_field(); ?>
+  <script>
+    (function(){
+      const modal = document.getElementById('translations-modal');
+      const form = document.getElementById('translation-form');
+      const inputId = document.getElementById('tr-category-id');
+      const inputLang = document.getElementById('tr-language');
+      const inputName = document.getElementById('tr-name');
+      const err = document.getElementById('tr-error');
+      const ok = document.getElementById('tr-success');
+      const btnSave = document.getElementById('tr-save');
+      const btnDelete = document.getElementById('tr-delete');
+
+      modal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        inputId.value = button.getAttribute('data-category-id');
+        form.reset();
+        err.classList.add('d-none');
+        ok.classList.add('d-none');
+      });
+
+      function post(url, data) {
+        const token = document.querySelector('input[name="csrf"]')?.value || '';
+        const body = new URLSearchParams({ ...data, csrf: token }).toString();
+        return fetch(url, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+          },
+          body
+        }).then(r => r.json());
+      }
+
+      function get(url, data) {
+        const qs = new URLSearchParams(data).toString();
+        return fetch(url + '&' + qs, {
+          method: 'GET',
+          credentials: 'same-origin',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+          }
+        }).then(r => r.json());
+      }
+
+      btnSave.addEventListener('click', function() {
+        if (!inputName.value.trim()) {
+          err.textContent = '<?php echo I18N::translate('Category name cannot be empty'); ?>';
+          err.classList.remove('d-none');
+          return;
+        }
+        err.classList.add('d-none');
+        // Use Admin endpoint multiplexer to avoid 404 and handle JSON
+        post('<?php echo e(route('module', ['module' => $module_name, 'action' => 'Admin'])); ?>', {
+          op: 'upsert-translation',
+          category_id: inputId.value,
+          language: inputLang.value,
+          name: inputName.value
+        }).then(json => {
+          if (json.success) {
+            ok.textContent = '<?php echo I18N::translate('Saved'); ?>';
+            ok.classList.remove('d-none');
+            setTimeout(() => { ok.classList.add('d-none'); }, 1500);
+          } else {
+            err.textContent = json.message || 'Error';
+            err.classList.remove('d-none');
+          }
+        }).catch(() => {
+          // Fallback GET in case server redirects POST
+          get('<?php echo e(route('module', ['module' => $module_name, 'action' => 'UpsertCategoryTranslation'])); ?>', {
+            category_id: inputId.value,
+            language: inputLang.value,
+            name: inputName.value
+          }).then(json => {
+            if (json.success) {
+              ok.textContent = '<?php echo I18N::translate('Saved'); ?>';
+              ok.classList.remove('d-none');
+              setTimeout(() => { ok.classList.add('d-none'); }, 1500);
+            } else {
+              err.textContent = json.message || 'Error';
+              err.classList.remove('d-none');
+            }
+          }).catch(() => {
+            err.textContent = 'Error';
+            err.classList.remove('d-none');
+          });
+          err.classList.remove('d-none');
+        });
+      });
+
+      btnDelete.addEventListener('click', function() {
+        err.classList.add('d-none');
+        post('<?php echo e(route('module', ['module' => $module_name, 'action' => 'Admin'])); ?>', {
+          op: 'delete-translation',
+          category_id: inputId.value,
+          language: inputLang.value
+        }).then(json => {
+          if (json.success) {
+            ok.textContent = '<?php echo I18N::translate('Deleted'); ?>';
+            ok.classList.remove('d-none');
+            setTimeout(() => { ok.classList.add('d-none'); }, 1500);
+          } else {
+            err.textContent = json.message || 'Error';
+            err.classList.remove('d-none');
+          }
+        }).catch(() => {
+          // Fallback GET in case server redirects POST
+          get('<?php echo e(route('module', ['module' => $module_name, 'action' => 'DeleteCategoryTranslation'])); ?>', {
+            category_id: inputId.value,
+            language: inputLang.value
+          }).then(json => {
+            if (json.success) {
+              ok.textContent = '<?php echo I18N::translate('Deleted'); ?>';
+              ok.classList.remove('d-none');
+              setTimeout(() => { ok.classList.add('d-none'); }, 1500);
+            } else {
+              err.textContent = json.message || 'Error';
+              err.classList.remove('d-none');
+            }
+          }).catch(() => {
+            err.textContent = 'Error';
+            err.classList.remove('d-none');
+          });
+          err.classList.remove('d-none');
+        });
+      });
+    })();
+  </script>
 </div>

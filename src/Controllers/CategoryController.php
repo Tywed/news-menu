@@ -162,6 +162,51 @@ class CategoryController
     }
 
     /**
+     * Upsert category translation
+     */
+    public function postUpsertCategoryTranslationAction(ServerRequestInterface $request): ResponseInterface
+    {
+        if (!Auth::isAdmin()) {
+            throw new HttpAccessDeniedException();
+        }
+
+        $params = (array) $request->getParsedBody();
+        $categoryId = (int)($params['category_id'] ?? 0);
+        $language = (string)($params['language'] ?? '');
+        $name = (string)($params['name'] ?? '');
+
+        if ($categoryId === 0 || $language === '' || trim($name) === '') {
+            return response(['success' => false, 'message' => I18N::translate('Invalid data')]);
+        }
+
+        $this->categoryRepository->upsertTranslation($categoryId, $language, $this->htmlService->sanitize($name));
+
+        return response(['success' => true]);
+    }
+
+    /**
+     * Delete category translation
+     */
+    public function postDeleteCategoryTranslationAction(ServerRequestInterface $request): ResponseInterface
+    {
+        if (!Auth::isAdmin()) {
+            throw new HttpAccessDeniedException();
+        }
+
+        $params = (array) $request->getParsedBody();
+        $categoryId = (int)($params['category_id'] ?? 0);
+        $language = (string)($params['language'] ?? '');
+
+        if ($categoryId === 0 || $language === '') {
+            return response(['success' => false, 'message' => I18N::translate('Invalid data')]);
+        }
+
+        $this->categoryRepository->deleteTranslation($categoryId, $language);
+
+        return response(['success' => true]);
+    }
+
+    /**
      * Delete a category
      * 
      * @param ServerRequestInterface $request

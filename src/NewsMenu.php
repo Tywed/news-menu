@@ -27,7 +27,7 @@ use Tywed\Webtrees\Module\NewsMenu\Controllers\CommentController;
 use Tywed\Webtrees\Module\NewsMenu\Repositories\NewsRepository;
 use Tywed\Webtrees\Module\NewsMenu\Repositories\CommentRepository;
 use Tywed\Webtrees\Module\NewsMenu\Services\NewsService;
-use Illuminate\Database\Capsule\Manager as DB;
+use Illuminate\Support\Facades\DB;
 use Fisharebest\Webtrees\FlashMessages;
 use Tywed\Webtrees\Module\NewsMenu\Repositories\CategoryRepository;
 use Fisharebest\Webtrees\Validator;
@@ -54,7 +54,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     public const CUSTOM_VERSION = '0.3.1';
     public const CUSTOM_LAST = self::CUSTOM_WEBSITE . 'raw/main/latest-version.txt';
     public const CUSTOM_SUPPORT_URL = self::CUSTOM_WEBSITE . 'issues';
-    public const SCHEMA_VERSION = 4;
+    public const SCHEMA_VERSION = 3;
     public const SETTING_SCHEMA_NAME = 'NEWS_SCHEMA_VERSION';
 
     private NewsController $newsController;
@@ -140,18 +140,6 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
             self::SETTING_SCHEMA_NAME, 
             self::SCHEMA_VERSION
         );
-
-        // Workaround for PHP8 PDO implicit commit with MySQL DDL inside UseTransaction middleware.
-        // If the implicit commit closed the transaction, re-open it to avoid
-        // "There is no active transaction" at middleware commit.
-        try {
-            $connection = DB::connection();
-            if (!$connection->getPdo()->inTransaction()) {
-                $connection->beginTransaction();
-            }
-        } catch (\Throwable $e) {
-            // best-effort; ignore if connection is unavailable here
-        }
     }
 
     /**
@@ -394,16 +382,6 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     {
         $params = (array) $request->getParsedBody();
 
-        // AJAX translations handling shortcut via Admin endpoint to avoid routing issues
-        $op = $params['op'] ?? null;
-        if ($op === 'upsert-translation') {
-            // Return JSON directly
-            return $this->categoryController->postUpsertCategoryTranslationAction($request);
-        }
-        if ($op === 'delete-translation') {
-            return $this->categoryController->postDeleteCategoryTranslationAction($request);
-        }
-
         $this->setPreference('news_menu_order', $params['news_menu_order']);
         $this->setPreference('limit_news', $params['limit_news']);
         $this->setPreference('limit_comments', $params['limit_comments']);
@@ -460,44 +438,6 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     public function postDeleteCategoryAction(ServerRequestInterface $request): ResponseInterface
     {
         return $this->categoryController->delete($request);
-    }
-
-    /**
-     * Upsert category translation (AJAX)
-     *
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
-     */
-    public function postUpsertCategoryTranslationAction(ServerRequestInterface $request): ResponseInterface
-    {
-        return $this->categoryController->postUpsertCategoryTranslationAction($request);
-    }
-
-    /**
-     * Delete category translation (AJAX)
-     *
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
-     */
-    public function postDeleteCategoryTranslationAction(ServerRequestInterface $request): ResponseInterface
-    {
-        return $this->categoryController->postDeleteCategoryTranslationAction($request);
-    }
-
-    /**
-     * GET fallback for AJAX (no CSRF) – upsert translation via query params
-     */
-    public function getUpsertCategoryTranslationAction(ServerRequestInterface $request): ResponseInterface
-    {
-        return $this->categoryController->postUpsertCategoryTranslationAction($request);
-    }
-
-    /**
-     * GET fallback for AJAX (no CSRF) – delete translation via query params
-     */
-    public function getDeleteCategoryTranslationAction(ServerRequestInterface $request): ResponseInterface
-    {
-        return $this->categoryController->postDeleteCategoryTranslationAction($request);
     }
 
     /**

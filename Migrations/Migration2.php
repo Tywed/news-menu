@@ -2,14 +2,13 @@
 
 namespace Tywed\Webtrees\Module\NewsMenu\Migrations;
 
-use Fisharebest\Webtrees\Schema\MigrationInterface;
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Schema\Blueprint;
 
 /**
  * Upgrade the database schema from version 1 to 2
  */
-class Migration2 implements MigrationInterface
+class Migration2
 {
     /**
      * Upgrade to version 2

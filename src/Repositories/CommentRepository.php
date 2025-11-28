@@ -124,4 +124,54 @@ class CommentRepository
             ]);
         }
     }
+
+    /**
+     * Get likes count for multiple comments at once
+     * 
+     * @param array $commentsIds
+     * @return array Associative array [comment_id => likes_count]
+     */
+    public function getLikesCountBatch(array $commentsIds): array
+    {
+        if (empty($commentsIds)) {
+            return [];
+        }
+
+        $rows = DB::table('comments_likes')
+            ->select('comments_id', DB::raw('COUNT(*) as likes_count'))
+            ->whereIn('comments_id', $commentsIds)
+            ->groupBy('comments_id')
+            ->get();
+
+        $result = [];
+        foreach ($commentsIds as $id) {
+            $result[$id] = 0;
+        }
+
+        foreach ($rows as $row) {
+            $result[$row->comments_id] = (int)$row->likes_count;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Check which comments user has liked
+     * 
+     * @param array $commentsIds
+     * @param int $user_id
+     * @return array Array of comment IDs that user has liked
+     */
+    public function getUserLikedComments(array $commentsIds, int $user_id): array
+    {
+        if (empty($commentsIds)) {
+            return [];
+        }
+
+        return DB::table('comments_likes')
+            ->whereIn('comments_id', $commentsIds)
+            ->where('user_id', '=', $user_id)
+            ->pluck('comments_id')
+            ->toArray();
+    }
 } 

@@ -75,7 +75,7 @@ use Fisharebest\Webtrees\Registry;
                   <?php foreach ($categories as $category): ?>
                     <?php if ($category->getCategoryId() === $category_id): ?>
                       <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'Category', 'category_id' => $category->getCategoryId(), 'tree' => $tree->name()])); ?>" class="badge bg-secondary px-2 py-1 text-decoration-none" style="margin-right: 4px;">
-                        <?php echo e($category->getName()); ?>
+                        <?php echo e($category->getName(\Fisharebest\Webtrees\I18N::languageTag())); ?>
                       </a>
                     <?php endif; ?>
                   <?php endforeach; ?>

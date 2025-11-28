@@ -47,7 +47,7 @@ use Fisharebest\Webtrees\Http\RequestHandlers\CreateMediaObjectModal;
                                     <option value=""><?php echo I18N::translate('No category'); ?></option>
                                     <?php foreach ($categories as $category): ?>
                                         <option value="<?php echo e($category->getCategoryId()); ?>" <?php echo $category_id === $category->getCategoryId() ? 'selected' : ''; ?>>
-                                            <?php echo e($category->getName()); ?>
+                                            <?php echo e($category->getName(\Fisharebest\Webtrees\I18N::languageTag())); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>

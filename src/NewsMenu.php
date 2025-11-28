@@ -51,10 +51,10 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     public const CUSTOM_MODULE = 'News-Menu';
     public const CUSTOM_AUTHOR = 'Tywed';
     public const CUSTOM_WEBSITE = 'https://github.com/tywed/' . self::CUSTOM_MODULE . '/';
-    public const CUSTOM_VERSION = '0.3.1';
+    public const CUSTOM_VERSION = '0.3.2';
     public const CUSTOM_LAST = self::CUSTOM_WEBSITE . 'raw/main/latest-version.txt';
     public const CUSTOM_SUPPORT_URL = self::CUSTOM_WEBSITE . 'issues';
-    public const SCHEMA_VERSION = 3;
+    public const SCHEMA_VERSION = 5;
     public const SETTING_SCHEMA_NAME = 'NEWS_SCHEMA_VERSION';
 
     private NewsController $newsController;
@@ -66,13 +66,13 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
      */
     public function __construct()
     {
-        $htmlService = new HtmlService();
+        $htmlService = AppHelper::get(HtmlService::class);
         $newsRepository = new NewsRepository();
         $commentRepository = new CommentRepository();
         $categoryRepository = new CategoryRepository();
-        $newsService = new NewsService($newsRepository, $commentRepository, $htmlService);
+        $newsService = new NewsService($newsRepository, $commentRepository, $htmlService, $categoryRepository);
 
-        $this->newsController = new NewsController($newsService, $commentRepository, $this);
+        $this->newsController = new NewsController($newsService, $commentRepository, $this, null, $categoryRepository);
         $this->commentController = new CommentController($commentRepository, $newsService, $this);
         $this->categoryController = new CategoryController($categoryRepository, $this);
     }
@@ -162,6 +162,30 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     public function resourcesFolder(): string
     {
         return dirname(__DIR__) . '/resources/';
+    }
+
+    /**
+     * Get list of available languages from Webtrees
+     * Uses I18N::activeLocales() to get languages that are actually installed and active
+     * 
+     * @return array<string> Language codes (e.g., ['en', 'de', 'ru', 'en-GB'])
+     */
+    public function getAvailableLanguages(): array
+    {
+        $locales = I18N::activeLocales();
+        $languages = [];
+        
+        foreach ($locales as $locale) {
+            $languageTag = $locale->languageTag();
+            $languages[] = $languageTag;
+        }
+        
+        // Fallback: if no locales found, return common languages
+        if (empty($languages)) {
+            $languages = ['en', 'de'];
+        }
+        
+        return array_unique($languages);
     }
 
     /**
@@ -369,6 +393,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
             'min_role_view_comments' => $this->getPreference('min_role_view_comments', 'visitor'),
             'categories' => $categories,
             'module_name' => $this->name(),
+            'available_languages' => $this->getAvailableLanguages(),
         ]);
     }
 
@@ -382,13 +407,51 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     {
         $params = (array) $request->getParsedBody();
 
-        $this->setPreference('news_menu_order', $params['news_menu_order']);
-        $this->setPreference('limit_news', $params['limit_news']);
-        $this->setPreference('limit_comments', $params['limit_comments']);
-        $this->setPreference('min_views_popular', $params['min_views_popular']);
-        $this->setPreference('min_role_news', $params['min_role_news'] ?? 'manager');
-        $this->setPreference('min_role_comments', $params['min_role_comments'] ?? 'editor');
-        $this->setPreference('min_role_view_comments', $params['min_role_view_comments'] ?? 'visitor');
+        // Validate and sanitize preferences
+        $news_menu_order = Validator::parsedBody($request)->integer('news_menu_order', -1);
+        $limit_news = Validator::parsedBody($request)->integer('limit_news', 5);
+        $limit_comments = Validator::parsedBody($request)->integer('limit_comments', 5);
+        $min_views_popular = Validator::parsedBody($request)->integer('min_views_popular', 5);
+        
+        // Validate limits
+        if ($limit_news < 1 || $limit_news > 100) {
+            FlashMessages::addMessage(I18N::translate('News limit must be between 1 and 100'), 'danger');
+            return redirect($this->getConfigLink());
+        }
+        
+        if ($limit_comments < 1 || $limit_comments > 100) {
+            FlashMessages::addMessage(I18N::translate('Comments limit must be between 1 and 100'), 'danger');
+            return redirect($this->getConfigLink());
+        }
+        
+        if ($min_views_popular < 0) {
+            FlashMessages::addMessage(I18N::translate('Minimum views for popular must be 0 or greater'), 'danger');
+            return redirect($this->getConfigLink());
+        }
+        
+        // Validate roles
+        $validRoles = ['visitor', 'member', 'editor', 'moderator', 'manager'];
+        $min_role_news = $params['min_role_news'] ?? 'manager';
+        $min_role_comments = $params['min_role_comments'] ?? 'editor';
+        $min_role_view_comments = $params['min_role_view_comments'] ?? 'visitor';
+        
+        if (!in_array($min_role_news, $validRoles)) {
+            $min_role_news = 'manager';
+        }
+        if (!in_array($min_role_comments, $validRoles)) {
+            $min_role_comments = 'editor';
+        }
+        if (!in_array($min_role_view_comments, $validRoles)) {
+            $min_role_view_comments = 'visitor';
+        }
+
+        $this->setPreference('news_menu_order', (string)$news_menu_order);
+        $this->setPreference('limit_news', (string)$limit_news);
+        $this->setPreference('limit_comments', (string)$limit_comments);
+        $this->setPreference('min_views_popular', (string)$min_views_popular);
+        $this->setPreference('min_role_news', $min_role_news);
+        $this->setPreference('min_role_comments', $min_role_comments);
+        $this->setPreference('min_role_view_comments', $min_role_view_comments);
 
         $message = I18N::translate('The preferences for the module " %s " have been updated.', $this->title());
         FlashMessages::addMessage($message, 'success');

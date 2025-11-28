@@ -14,6 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Tywed\Webtrees\Module\NewsMenu\Repositories\CategoryRepository;
 use Tywed\Webtrees\Module\NewsMenu\NewsMenu;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
+use Tywed\Webtrees\Module\NewsMenu\Helpers\AppHelper;
 
 /**
  * Controller for category management
@@ -31,14 +32,27 @@ class CategoryController
      * 
      * @param CategoryRepository $categoryRepository
      * @param NewsMenu $module
+     * @param HtmlService|null $htmlService
      */
     public function __construct(
         CategoryRepository $categoryRepository,
-        NewsMenu $module
+        NewsMenu $module,
+        ?HtmlService $htmlService = null
     ) {
         $this->categoryRepository = $categoryRepository;
         $this->module = $module;
-        $this->htmlService = new HtmlService();
+        $this->htmlService = $htmlService ?? AppHelper::get(HtmlService::class);
+    }
+
+    /**
+     * Get list of available languages from module
+     * Delegates to NewsMenu::getAvailableLanguages() which uses I18N::activeLocales()
+     * 
+     * @return array<string> Language codes
+     */
+    private function getAvailableLanguages(): array
+    {
+        return $this->module->getAvailableLanguages();
     }
 
     /**
@@ -55,9 +69,10 @@ class CategoryController
         
         $params = (array) $request->getParsedBody();
         
-        $name = $params['name'] ?? '';
+        $name = $params['name'] ?? ''; // Fallback name
         $description = $params['description'] ?? null;
         $sortOrder = (int)($params['sort_order'] ?? 0);
+        $translations = $params['translations'] ?? []; // ['en' => 'Name', 'de' => 'Name']
         
         if ($name === '') {
             $message = I18N::translate('Category name cannot be empty');
@@ -68,7 +83,20 @@ class CategoryController
                 $description = $this->htmlService->sanitize($description);
             }
             
-            $this->categoryRepository->create($name, $description, $sortOrder);
+            // Create category
+            $category = $this->categoryRepository->create($name, $description, $sortOrder);
+            
+            // Save translations
+            foreach ($translations as $language => $translatedName) {
+                if (!empty($translatedName)) {
+                    $translatedName = $this->htmlService->sanitize($translatedName);
+                    $this->categoryRepository->saveTranslation(
+                        $category->getCategoryId(),
+                        $language,
+                        $translatedName
+                    );
+                }
+            }
             
             $message = I18N::translate('Category added successfully');
             FlashMessages::addMessage($message, 'success');
@@ -111,6 +139,7 @@ class CategoryController
             'title' => I18N::translate('Edit Category'),
             'category' => $category,
             'module_name' => $this->module->name(),
+            'available_languages' => $this->getAvailableLanguages(),
         ]);
     }
     
@@ -129,9 +158,10 @@ class CategoryController
         $params = (array) $request->getParsedBody();
         
         $category_id = (int)($params['category_id'] ?? 0);
-        $name = $params['name'] ?? '';
+        $name = $params['name'] ?? ''; // Fallback name
         $description = $params['description'] ?? null;
         $sortOrder = (int)($params['sort_order'] ?? 0);
+        $translations = $params['translations'] ?? []; // ['en' => 'Name', 'de' => 'Name']
         
         if ($category_id === 0) {
             $message = I18N::translate('Invalid category ID');
@@ -151,7 +181,23 @@ class CategoryController
                     $description = $this->htmlService->sanitize($description);
                 }
                 
+                // Update category
                 $this->categoryRepository->update($category, $name, $description, $sortOrder);
+                
+                // Update translations
+                foreach ($translations as $language => $translatedName) {
+                    if (!empty($translatedName)) {
+                        $translatedName = $this->htmlService->sanitize($translatedName);
+                        $this->categoryRepository->saveTranslation(
+                            $category_id,
+                            $language,
+                            $translatedName
+                        );
+                    } else {
+                        // Remove translation if empty
+                        $this->categoryRepository->deleteTranslation($category_id, $language);
+                    }
+                }
                 
                 $message = I18N::translate('Category updated successfully');
                 FlashMessages::addMessage($message, 'success');

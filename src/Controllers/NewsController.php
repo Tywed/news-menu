@@ -20,6 +20,9 @@ use Illuminate\Support\Collection;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\Services\UserService;
 use Fisharebest\Webtrees\Registry;
+use Tywed\Webtrees\Module\NewsMenu\Helpers\AppHelper;
+use Fisharebest\Webtrees\Http\Exceptions\HttpBadRequestException;
+use Tywed\Webtrees\Module\NewsMenu\Repositories\CategoryRepository;
 
 class NewsController
 {
@@ -29,16 +32,20 @@ class NewsController
     private CommentRepository $commentRepository;
     private NewsMenu $module;
     private UserService $userService;
+    private CategoryRepository $categoryRepository;
 
     public function __construct(
         NewsService $newsService,
         CommentRepository $commentRepository,
-        NewsMenu $module
+        NewsMenu $module,
+        ?UserService $userService = null,
+        ?CategoryRepository $categoryRepository = null
     ) {
         $this->newsService = $newsService;
         $this->commentRepository = $commentRepository;
         $this->module = $module;
-        $this->userService = new UserService();
+        $this->userService = $userService ?? AppHelper::get(UserService::class);
+        $this->categoryRepository = $categoryRepository ?? new CategoryRepository();
     }
 
     /**
@@ -47,6 +54,29 @@ class NewsController
     private function ensureCollection($items): Collection
     {
         return $items instanceof Collection ? $items : new Collection($items);
+    }
+
+    /**
+     * Filter articles by current language with optional exclusion
+     * 
+     * @param Collection $articles
+     * @param int|null $excludeNewsId Optional news ID to exclude from results
+     * @return Collection
+     */
+    private function filterByLanguage(Collection $articles, ?int $excludeNewsId = null): Collection
+    {
+        $currentLanguage = I18N::languageTag();
+        
+        return $articles->filter(function($article) use ($currentLanguage, $excludeNewsId) {
+            // Exclude specific news if provided
+            if ($excludeNewsId !== null && $article->getNewsId() === $excludeNewsId) {
+                return false;
+            }
+            
+            $languages = $article->getLanguagesArray();
+            // If no languages specified, show for all languages
+            return empty($languages) || in_array($currentLanguage, $languages);
+        });
     }
 
     public function page(ServerRequestInterface $request): ResponseInterface
@@ -59,11 +89,8 @@ class NewsController
         $totalArticles = $this->newsService->count($tree);
         $articles = $this->ensureCollection($this->newsService->findAll($tree, $limit, $offset));
         
-        $currentLanguage = \Fisharebest\Webtrees\I18N::languageTag();
-        $articles = $articles->filter(function($article) use ($currentLanguage) {
-            $languages = $article->getLanguagesArray();
-            return empty($languages) || in_array($currentLanguage, $languages);
-        });
+        // Filter articles by current language
+        $articles = $this->filterByLanguage($articles);
         
         // Get categories for the view
         $categories = $this->newsService->getAllCategories();
@@ -72,10 +99,8 @@ class NewsController
         $minViews = (int)$this->module->getPreference('min_views_popular', '5');
         $popularArticles = $this->ensureCollection($this->newsService->findPopular($tree, 3, $minViews));
         
-        $popularArticles = $popularArticles->filter(function($article) use ($currentLanguage) {
-            $languages = $article->getLanguagesArray();
-            return empty($languages) || in_array($currentLanguage, $languages);
-        });
+        // Filter popular articles by current language
+        $popularArticles = $this->filterByLanguage($popularArticles);
 
         return $this->viewResponse($this->module->name() . '::page-news', [
             'title' => I18N::translate('News'),
@@ -91,23 +116,6 @@ class NewsController
         ]);
     }
 
-    /**
-     * Get individual for a user in the specified tree
-     */
-    private function getIndividualForUser(?int $user_id, Tree $tree)
-    {
-        if ($user_id === null) {
-            return null;
-        }
-        
-        $user = $this->userService->find($user_id);
-        if ($user === null) {
-            return null;
-        }
-        
-        $gedcom_id = $tree->getUserPreference($user, 'gedcomid');
-        return Registry::individualFactory()->make($gedcom_id, $tree);
-    }
 
     public function show(ServerRequestInterface $request): ResponseInterface
     {
@@ -129,8 +137,9 @@ class NewsController
         $total_comments = $this->commentRepository->countByNews($news_id);
         
         $limit_comments = (int)$this->module->getPreference('limit_comments', '5');
-        
-        $comments = $this->commentRepository->findByNews($news_id, 999);
+        // Use reasonable limit instead of 999
+        $maxCommentsLimit = 100;
+        $comments = $this->commentRepository->findByNews($news_id, $maxCommentsLimit);
         
         $like_exists = $user_id !== null ? $this->newsService->hasUserLiked($news_id, $user_id) : false;
         $categories = $this->newsService->getAllCategories();
@@ -139,44 +148,54 @@ class NewsController
         $minViews = (int)$this->module->getPreference('min_views_popular', '5');
         $popularArticles = $this->ensureCollection($this->newsService->findPopular($tree, 3, $minViews));
         
+        // Optimize N+1 queries: batch load likes and user data
+        $commentsIds = array_map(fn($c) => $c->getCommentsId(), $comments);
+        $likesCounts = $this->commentRepository->getLikesCountBatch($commentsIds);
+        $userLikedComments = $user_id !== null 
+            ? $this->commentRepository->getUserLikedComments($commentsIds, $user_id) 
+            : [];
+        
+        // Get unique user IDs for batch loading
+        $userIds = array_unique(array_map(fn($c) => $c->getUserId(), $comments));
+        $users = [];
+        foreach ($userIds as $uid) {
+            $users[$uid] = $this->userService->find($uid);
+        }
+        
         // Process comments to add individual and like information
         foreach ($comments as $comment) {
-            $individual = $this->getIndividualForUser($comment->getUserId(), $tree);
-            $comment->setIndividual($individual);
+            $userId = $comment->getUserId();
+            $user = $users[$userId] ?? null;
+            if ($user !== null) {
+                $gedcom_id = $tree->getUserPreference($user, 'gedcomid');
+                $individual = Registry::individualFactory()->make($gedcom_id, $tree);
+                $comment->setIndividual($individual);
+            }
             
-            // Set like information
-            $hasLiked = $user_id !== null && $this->commentRepository->hasUserLiked($comment->getCommentsId(), $user_id);
-            $comment->setLikeExists($hasLiked);
-            $comment->setLikesCount($this->commentRepository->getLikesCount($comment->getCommentsId()));
+            // Set like information from batch data
+            $commentId = $comment->getCommentsId();
+            $comment->setLikesCount($likesCounts[$commentId] ?? 0);
+            $comment->setLikeExists(in_array($commentId, $userLikedComments));
         }
 
-        // Get Individual of current user for comment form
-        $individual1 = $this->getIndividualForUser($user_id, $tree);
+        // Get Individual of current user for comment form (optimized)
+        $individual1 = null;
+        if ($user_id !== null) {
+            $user = $this->userService->find($user_id);
+            if ($user !== null) {
+                $gedcom_id = $tree->getUserPreference($user, 'gedcomid');
+                $individual1 = Registry::individualFactory()->make($gedcom_id, $tree);
+            }
+        }
         
         // Get the author of the news (for now using a placeholder)
         $author = 'Administrator';
         
-        // Фильтрация боковых блоков статей по текущему языку пользователя
-        $currentLanguage = \Fisharebest\Webtrees\I18N::languageTag();
-        $articles = $articles->filter(function($article) use ($currentLanguage, $news_id) {
-            // Исключаем текущую новость
-            if ($article->getNewsId() === $news_id) {
-                return false;
-            }
-            $languages = $article->getLanguagesArray();
-            // Если языки не указаны, показываем для всех
-            return empty($languages) || in_array($currentLanguage, $languages);
-        });
+        // Filter articles by current language, excluding current news
+        $articles = $this->filterByLanguage($articles, $news_id);
         
-        // Также фильтруем популярные статьи по языку
-        $popularArticles = $popularArticles->filter(function($article) use ($currentLanguage, $news_id) {
-            // Исключаем текущую новость
-            if ($article->getNewsId() === $news_id) {
-                return false;
-            }
-            $languages = $article->getLanguagesArray();
-            return empty($languages) || in_array($currentLanguage, $languages);
-        });
+        // Filter popular articles by current language, excluding current news
+        $popularArticles = $this->filterByLanguage($popularArticles, $news_id);
 
         return $this->viewResponse($this->module->name() . '::show', [
             'module_name' => $this->module->name(),
@@ -265,9 +284,75 @@ class NewsController
         $brief = Validator::parsedBody($request)->string('brief');
         $media_id = Validator::parsedBody($request)->string('obje-xref');
         
+        // Validate input data
+        if (mb_strlen(trim($subject)) === 0) {
+            FlashMessages::addMessage(I18N::translate('Subject cannot be empty'), 'danger');
+            return redirect(route('module', [
+                'tree' => $tree->name(),
+                'module' => $this->module->name(),
+                'action' => 'EditNews',
+                'news_id' => $news_id,
+            ]));
+        }
+        
+        if (mb_strlen($subject) > 255) {
+            FlashMessages::addMessage(I18N::translate('Subject is too long (maximum 255 characters)'), 'danger');
+            return redirect(route('module', [
+                'tree' => $tree->name(),
+                'module' => $this->module->name(),
+                'action' => 'EditNews',
+                'news_id' => $news_id,
+            ]));
+        }
+        
+        // Validate date
+        try {
+            $updatedDate = Carbon::parse($updated);
+        } catch (\Exception $e) {
+            FlashMessages::addMessage(I18N::translate('Invalid date format'), 'danger');
+            return redirect(route('module', [
+                'tree' => $tree->name(),
+                'module' => $this->module->name(),
+                'action' => 'EditNews',
+                'news_id' => $news_id,
+            ]));
+        }
+        
+        // Validate media_id if provided
+        // Note: media_id is stored as string with default '' (not nullable in DB)
+        if ($media_id !== '' && $media_id !== null) {
+            $media = Registry::mediaFactory()->make($media_id, $tree);
+            if ($media === null) {
+                FlashMessages::addMessage(I18N::translate('Media object not found'), 'danger');
+                return redirect(route('module', [
+                    'tree' => $tree->name(),
+                    'module' => $this->module->name(),
+                    'action' => 'EditNews',
+                    'news_id' => $news_id,
+                ]));
+            }
+        } else {
+            // Use empty string instead of null, as DB field is not nullable
+            $media_id = '';
+        }
+        
         // Handle empty category value (empty string) properly
         $category_id_raw = $request->getParsedBody()['category_id'] ?? '';
         $category_id = $category_id_raw === '' ? null : (int)$category_id_raw;
+        
+        // Validate category_id if provided
+        if ($category_id !== null) {
+            $category = $this->categoryRepository->find($category_id);
+            if ($category === null) {
+                FlashMessages::addMessage(I18N::translate('Category not found'), 'danger');
+                return redirect(route('module', [
+                    'tree' => $tree->name(),
+                    'module' => $this->module->name(),
+                    'action' => 'EditNews',
+                    'news_id' => $news_id,
+                ]));
+            }
+        }
         
         $is_pinned = (bool)Validator::parsedBody($request)->integer('is_pinned', 0);
         
@@ -277,17 +362,21 @@ class NewsController
 
         if ($news_id !== 0) {
             $news = $this->newsService->find($news_id, $tree);
+            if ($news === null) {
+                throw new HttpNotFoundException(I18N::translate('%s does not exist.', 'news_id:' . $news_id));
+            }
             $this->newsService->update(
                 $news, 
                 $subject, 
                 $brief, 
                 $body, 
                 $media_id, 
-                Carbon::parse($updated),
+                $updatedDate,
                 $category_id,
                 $is_pinned,
                 $languages_str
             );
+            FlashMessages::addMessage(I18N::translate('News updated successfully'), 'success');
         } else {
             $this->newsService->create(
                 $tree, 
@@ -295,11 +384,12 @@ class NewsController
                 $brief, 
                 $body, 
                 $media_id, 
-                Carbon::parse($updated),
+                $updatedDate,
                 $category_id,
                 $is_pinned,
                 $languages_str
             );
+            FlashMessages::addMessage(I18N::translate('News created successfully'), 'success');
         }
 
         $url = route('module', [
@@ -321,7 +411,12 @@ class NewsController
         }
 
         $news = $this->newsService->find($news_id, $tree);
+        if ($news === null) {
+            throw new HttpNotFoundException(I18N::translate('%s does not exist.', 'news_id:' . $news_id));
+        }
+        
         $this->newsService->delete($news);
+        FlashMessages::addMessage(I18N::translate('News deleted successfully'), 'success');
 
         $url = route('module', [
             'tree' => $tree->name(),
@@ -334,8 +429,25 @@ class NewsController
 
     public function like(ServerRequestInterface $request): ResponseInterface
     {
+        $tree = Validator::attributes($request)->tree();
         $news_id = Validator::queryParams($request)->integer('news_id');
         $user_id = Auth::id();
+        
+        if ($user_id === null) {
+            return response([
+                'success' => false,
+                'message' => I18N::translate('You must be logged in to like news'),
+            ], 401);
+        }
+
+        // Validate news exists
+        $news = $this->newsService->find($news_id, $tree);
+        if ($news === null) {
+            return response([
+                'success' => false,
+                'message' => I18N::translate('News not found'),
+            ], 404);
+        }
 
         $this->newsService->addLike($news_id, $user_id);
 
@@ -366,13 +478,8 @@ class NewsController
         $totalArticles = $this->newsService->countByCategory($tree, $category_id);
         $articles = $this->ensureCollection($this->newsService->findByCategory($tree, $category_id, $limit, $offset));
         
-        // Фильтрация статей по текущему языку пользователя
-        $currentLanguage = \Fisharebest\Webtrees\I18N::languageTag();
-        $articles = $articles->filter(function($article) use ($currentLanguage) {
-            $languages = $article->getLanguagesArray();
-            // Если языки не указаны, показываем для всех
-            return empty($languages) || in_array($currentLanguage, $languages);
-        });
+        // Filter articles by current language
+        $articles = $this->filterByLanguage($articles);
         
         $categories = $this->newsService->getAllCategories();
         
@@ -390,7 +497,7 @@ class NewsController
         }
 
         return $this->viewResponse($this->module->name() . '::page-news', [
-            'title' => $currentCategory->getName(),
+            'title' => $currentCategory->getName($currentLanguage),
             'module_name' => $this->module->name(),
             'module' => $this->module,
             'tree' => $tree,

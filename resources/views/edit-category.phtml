@@ -17,9 +17,44 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
     <div class="card-body">
         <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'EditCategory'])); ?>">
             <div class="mb-3">
-                <label for="category_name" class="form-label"><?php echo I18N::translate('Category Name'); ?></label>
+                <label for="category_name" class="form-label"><?php echo I18N::translate('Category Name (Fallback)'); ?></label>
                 <input type="text" class="form-control" id="category_name" name="name" value="<?php echo e($category->getName()); ?>" required>
+                <small class="form-text text-muted"><?php echo I18N::translate('This name will be used if translation is missing'); ?></small>
             </div>
+            
+            <div class="mb-3">
+                <label class="form-label"><?php echo I18N::translate('Translations'); ?></label>
+                <div class="card">
+                    <div class="card-body">
+                        <?php 
+                        $translations = $category->getTranslations();
+                        foreach ($available_languages as $lang): 
+                            $langName = $lang;
+                            // Try to get language name from I18N if available
+                            if (function_exists('locale_get_display_language')) {
+                                try {
+                                    $langName = locale_get_display_language($lang, I18N::languageTag());
+                                } catch (Exception $e) {
+                                    // Fallback to code
+                                }
+                            }
+                        ?>
+                            <div class="mb-2">
+                                <label for="translation_<?php echo e($lang); ?>" class="form-label small">
+                                    <?php echo e(strtoupper($lang)); ?> - <?php echo e($langName); ?>
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-sm" 
+                                       id="translation_<?php echo e($lang); ?>" 
+                                       name="translations[<?php echo e($lang); ?>]" 
+                                       value="<?php echo e($translations[$lang] ?? ''); ?>"
+                                       placeholder="<?php echo I18N::translate('Leave empty to use fallback name'); ?>">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+            
             <div class="mb-3">
                 <label for="category_description" class="form-label"><?php echo I18N::translate('Description'); ?></label>
                 <textarea class="form-control" id="category_description" name="description" rows="3"><?php echo e($category->getDescription()); ?></textarea>

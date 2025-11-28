@@ -11,6 +11,7 @@ use Tywed\Webtrees\Module\NewsMenu\Models\News;
 use Tywed\Webtrees\Module\NewsMenu\Repositories\NewsRepository;
 use Tywed\Webtrees\Module\NewsMenu\Repositories\CommentRepository;
 use Tywed\Webtrees\Module\NewsMenu\Repositories\CategoryRepository;
+use Tywed\Webtrees\Module\NewsMenu\Helpers\AppHelper;
 
 class NewsService
 {
@@ -23,7 +24,7 @@ class NewsService
         NewsRepository $newsRepository,
         CommentRepository $commentRepository,
         HtmlService $htmlService,
-        CategoryRepository $categoryRepository = null
+        ?CategoryRepository $categoryRepository = null
     ) {
         $this->newsRepository = $newsRepository;
         $this->commentRepository = $commentRepository;

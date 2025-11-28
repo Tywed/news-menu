@@ -216,6 +216,9 @@ class NewsRepository
         string $languages = ''
     ): News {
         $updated = $updated ?? Carbon::now();
+        
+        // Ensure media_id is empty string instead of null (DB field is not nullable)
+        $media_id = $media_id ?? '';
 
         // Create a new News record
         $news_id = DB::table('news')->insertGetId([
@@ -257,6 +260,9 @@ class NewsRepository
         bool $isPinned = false,
         string $languages = ''
     ): void {
+        // Ensure media_id is empty string instead of null (DB field is not nullable)
+        $media_id = $media_id ?? '';
+        
         DB::table('news')
             ->where('news_id', '=', $news->getNewsId())
             ->where('gedcom_id', '=', $news->getGedcomId())

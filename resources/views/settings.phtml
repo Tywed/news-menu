@@ -178,7 +178,7 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                             <tbody>
                                 <?php foreach ($categories as $category): ?>
                                 <tr>
-                                    <td><?php echo e($category->getName()); ?></td>
+                                    <td><?php echo e($category->getName(\Fisharebest\Webtrees\I18N::languageTag())); ?></td>
                                     <td><?php echo e($category->getDescription()); ?></td>
                                     <td class="text-center"><?php echo e($category->getSortOrder()); ?></td>
                                     <td class="text-center">

@@ -109,7 +109,7 @@ class News
 
     public function getMedia(Tree $tree): ?Media
     {
-        if ($this->media_id === null) {
+        if ($this->media_id === null || $this->media_id === '') {
             return null;
         }
 

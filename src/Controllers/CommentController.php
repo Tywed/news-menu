@@ -17,6 +17,8 @@ use Tywed\Webtrees\Module\NewsMenu\NewsMenu;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
 use Fisharebest\Webtrees\Services\UserService;
 use Fisharebest\Webtrees\Registry;
+use Tywed\Webtrees\Module\NewsMenu\Helpers\AppHelper;
+use Fisharebest\Webtrees\Http\Exceptions\HttpNotFoundException;
 
 class CommentController
 {
@@ -33,16 +35,18 @@ class CommentController
      * @param CommentRepository $commentRepository
      * @param NewsService $newsService
      * @param NewsMenu $module
+     * @param UserService|null $userService
      */
     public function __construct(
         CommentRepository $commentRepository,
         NewsService $newsService,
-        NewsMenu $module
+        NewsMenu $module,
+        ?UserService $userService = null
     ) {
         $this->commentRepository = $commentRepository;
         $this->newsService = $newsService;
         $this->module = $module;
-        $this->userService = new UserService();
+        $this->userService = $userService ?? AppHelper::get(UserService::class);
     }
 
     /**
@@ -64,9 +68,19 @@ class CommentController
         $news_id = Validator::queryParams($request)->integer('news_id');
         $comment = Validator::parsedBody($request)->string('comment');
         
-        // Don't allow empty comments
-        if (trim($comment) === '') {
+        // Validate news exists
+        $news = $this->newsService->find($news_id, $tree);
+        if ($news === null) {
+            throw new HttpNotFoundException(I18N::translate('News not found'));
+        }
+        
+        // Validate comment
+        $comment = trim($comment);
+        if ($comment === '') {
             $message = I18N::translate('Comment cannot be empty');
+            FlashMessages::addMessage($message, 'danger');
+        } elseif (mb_strlen($comment) > 5000) {
+            $message = I18N::translate('Comment is too long (maximum 5000 characters)');
             FlashMessages::addMessage($message, 'danger');
         } else {
             $this->commentRepository->create($news_id, $user_id, $comment);
@@ -136,7 +150,16 @@ class CommentController
             return response([
                 'success' => false,
                 'message' => I18N::translate('You must be logged in to like comments'),
-            ]);
+            ], 401);
+        }
+
+        // Validate comment exists
+        $comment = $this->commentRepository->find($comments_id);
+        if ($comment === null) {
+            return response([
+                'success' => false,
+                'message' => I18N::translate('Comment not found'),
+            ], 404);
         }
 
         $this->commentRepository->addLike($comments_id, $user_id);

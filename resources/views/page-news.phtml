@@ -69,7 +69,7 @@ use Illuminate\Support\Collection;
                                                 <?php foreach ($categories as $category): ?>
                                                     <?php if ($category->getCategoryId() === $article->getCategoryId()): ?>
                                                         <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'Category', 'category_id' => $category->getCategoryId(), 'tree' => $tree->name()])); ?>" class="badge bg-secondary px-2 py-1 text-decoration-none ms-2">
-                                                            <?php echo e($category->getName()); ?>
+                                                            <?php echo e($category->getName(\Fisharebest\Webtrees\I18N::languageTag())); ?>
                                                         </a>
                                                     <?php endif; ?>
                                                 <?php endforeach; ?>
@@ -141,7 +141,7 @@ use Illuminate\Support\Collection;
                     <?php foreach ($categories ?? [] as $category): ?>
                         <li class="list-group-item wt-list-item <?php echo isset($current_category) && $current_category->getCategoryId() === $category->getCategoryId() ? 'active' : ''; ?>">
                             <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'Category', 'category_id' => $category->getCategoryId(), 'tree' => $tree->name()])); ?>" class="text-decoration-none">
-                                <?php echo e($category->getName()); ?>
+                                <?php echo e($category->getName(\Fisharebest\Webtrees\I18N::languageTag())); ?>
                             </a>
                         </li>
                     <?php endforeach; ?>

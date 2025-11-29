@@ -497,7 +497,7 @@ class NewsController
         }
 
         return $this->viewResponse($this->module->name() . '::page-news', [
-            'title' => $currentCategory->getName($currentLanguage),
+            'title' => $currentCategory->getName(I18N::languageTag()),
             'module_name' => $this->module->name(),
             'module' => $this->module,
             'tree' => $tree,

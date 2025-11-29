@@ -13,7 +13,7 @@ $next = min($totalPages, $current + 1);
 if ($totalPages > 1) {
     echo '<nav aria-label="Page navigation">';
     echo '<ul class="pagination justify-content-center">';
-    
+
     if ($current > 1) {
         echo '<li class="page-item">';
         echo '<a class="page-link" href="' . route('module', [
@@ -25,7 +25,7 @@ if ($totalPages > 1) {
         ]) . '">' . I18N::translate('previous') . '</a>';
         echo '</li>';
     }
-    
+
     for ($i = 1; $i <= $totalPages; $i++) {
         if ($i == $current) {
             echo '<li class="page-item active" aria-current="page">';
@@ -43,7 +43,7 @@ if ($totalPages > 1) {
             echo '</li>';
         }
     }
-    
+
     if ($current < $totalPages) {
         echo '<li class="page-item">';
         echo '<a class="page-link" href="' . route('module', [
@@ -55,8 +55,7 @@ if ($totalPages > 1) {
         ]) . '">' . I18N::translate('next') . '</a>';
         echo '</li>';
     }
-    
+
     echo '</ul>';
     echo '</nav>';
 }
-

@@ -22,14 +22,14 @@ use Tywed\Webtrees\Module\NewsMenu\Helpers\AppHelper;
 class CategoryController
 {
     use ViewResponseTrait;
-    
+
     private CategoryRepository $categoryRepository;
     private NewsMenu $module;
     private HtmlService $htmlService;
 
     /**
      * Constructor
-     * 
+     *
      * @param CategoryRepository $categoryRepository
      * @param NewsMenu $module
      * @param HtmlService|null $htmlService
@@ -47,7 +47,7 @@ class CategoryController
     /**
      * Get list of available languages from module
      * Delegates to NewsMenu::getAvailableLanguages() which uses I18N::activeLocales()
-     * 
+     *
      * @return array<string> Language codes
      */
     private function getAvailableLanguages(): array
@@ -57,7 +57,7 @@ class CategoryController
 
     /**
      * Add a new category
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -66,14 +66,14 @@ class CategoryController
         if (!Auth::isAdmin()) {
             throw new HttpAccessDeniedException();
         }
-        
+
         $params = (array) $request->getParsedBody();
-        
+
         $name = $params['name'] ?? ''; // Fallback name
         $description = $params['description'] ?? null;
         $sortOrder = (int)($params['sort_order'] ?? 0);
         $translations = $params['translations'] ?? []; // ['en' => 'Name', 'de' => 'Name']
-        
+
         if ($name === '') {
             $message = I18N::translate('Category name cannot be empty');
             FlashMessages::addMessage($message, 'danger');
@@ -82,10 +82,10 @@ class CategoryController
             if ($description !== null) {
                 $description = $this->htmlService->sanitize($description);
             }
-            
+
             // Create category
             $category = $this->categoryRepository->create($name, $description, $sortOrder);
-            
+
             // Save translations
             foreach ($translations as $language => $translatedName) {
                 if (!empty($translatedName)) {
@@ -97,17 +97,17 @@ class CategoryController
                     );
                 }
             }
-            
+
             $message = I18N::translate('Category added successfully');
             FlashMessages::addMessage($message, 'success');
         }
-        
+
         return redirect($this->module->getConfigLink());
     }
 
     /**
      * Show the edit category form
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -116,25 +116,25 @@ class CategoryController
         if (!Auth::isAdmin()) {
             throw new HttpAccessDeniedException();
         }
-        
+
         $category_id = Validator::queryParams($request)->integer('category_id', 0);
-        
+
         if ($category_id === 0) {
             $message = I18N::translate('Invalid category ID');
             FlashMessages::addMessage($message, 'danger');
             return redirect($this->module->getConfigLink());
         }
-        
+
         $category = $this->categoryRepository->find($category_id);
-        
+
         if ($category === null) {
             $message = I18N::translate('Category not found');
             FlashMessages::addMessage($message, 'danger');
             return redirect($this->module->getConfigLink());
         }
-        
+
         $this->layout = 'layouts/administration';
-        
+
         return $this->viewResponse($this->module->name() . '::edit-category', [
             'title' => I18N::translate('Edit Category'),
             'category' => $category,
@@ -142,10 +142,10 @@ class CategoryController
             'available_languages' => $this->getAvailableLanguages(),
         ]);
     }
-    
+
     /**
      * Update a category
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -154,15 +154,15 @@ class CategoryController
         if (!Auth::isAdmin()) {
             throw new HttpAccessDeniedException();
         }
-        
+
         $params = (array) $request->getParsedBody();
-        
+
         $category_id = (int)($params['category_id'] ?? 0);
         $name = $params['name'] ?? ''; // Fallback name
         $description = $params['description'] ?? null;
         $sortOrder = (int)($params['sort_order'] ?? 0);
         $translations = $params['translations'] ?? []; // ['en' => 'Name', 'de' => 'Name']
-        
+
         if ($category_id === 0) {
             $message = I18N::translate('Invalid category ID');
             FlashMessages::addMessage($message, 'danger');
@@ -171,7 +171,7 @@ class CategoryController
             FlashMessages::addMessage($message, 'danger');
         } else {
             $category = $this->categoryRepository->find($category_id);
-            
+
             if ($category === null) {
                 $message = I18N::translate('Category not found');
                 FlashMessages::addMessage($message, 'danger');
@@ -180,10 +180,10 @@ class CategoryController
                 if ($description !== null) {
                     $description = $this->htmlService->sanitize($description);
                 }
-                
+
                 // Update category
                 $this->categoryRepository->update($category, $name, $description, $sortOrder);
-                
+
                 // Update translations
                 foreach ($translations as $language => $translatedName) {
                     if (!empty($translatedName)) {
@@ -198,18 +198,18 @@ class CategoryController
                         $this->categoryRepository->deleteTranslation($category_id, $language);
                     }
                 }
-                
+
                 $message = I18N::translate('Category updated successfully');
                 FlashMessages::addMessage($message, 'success');
             }
         }
-        
+
         return redirect($this->module->getConfigLink());
     }
 
     /**
      * Delete a category
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -218,28 +218,28 @@ class CategoryController
         if (!Auth::isAdmin()) {
             throw new HttpAccessDeniedException();
         }
-        
+
         $params = (array) $request->getParsedBody();
-        
+
         $categoryId = (int)($params['category_id'] ?? 0);
-        
+
         if ($categoryId === 0) {
             $message = I18N::translate('Invalid category ID');
             FlashMessages::addMessage($message, 'danger');
         } else {
             $category = $this->categoryRepository->find($categoryId);
-            
+
             if ($category === null) {
                 $message = I18N::translate('Category not found');
                 FlashMessages::addMessage($message, 'danger');
             } else {
                 $this->categoryRepository->delete($category);
-                
+
                 $message = I18N::translate('Category deleted successfully');
                 FlashMessages::addMessage($message, 'success');
             }
         }
-        
+
         return redirect($this->module->getConfigLink());
     }
-} 
+}

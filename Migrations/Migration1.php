@@ -24,7 +24,7 @@ class Migration1 implements MigrationInterface
                 $table->string('description', 1000)->charset('utf8')->collate('utf8_unicode_ci')->nullable();
                 $table->integer('sort_order')->default(0);
             });
-            
+
             // Add default categories
             DB::table('news_categories')->insert([
                 ['name' => 'Announcements', 'description' => 'Important announcements about the site or family', 'sort_order' => 1],
@@ -33,7 +33,7 @@ class Migration1 implements MigrationInterface
                 ['name' => 'General', 'description' => 'General news and updates', 'sort_order' => 4],
             ]);
         }
-        
+
         // Add fields to news table
         if (!DB::schema()->hasColumn('news', 'category_id')) {
             DB::schema()->table('news', function (Blueprint $table): void {
@@ -41,17 +41,17 @@ class Migration1 implements MigrationInterface
                 $table->foreign('category_id')->references('category_id')->on('news_categories')->onDelete('SET NULL');
             });
         }
-        
+
         if (!DB::schema()->hasColumn('news', 'is_pinned')) {
             DB::schema()->table('news', function (Blueprint $table): void {
                 $table->boolean('is_pinned')->default(false);
             });
         }
-        
+
         if (!DB::schema()->hasColumn('news', 'view_count')) {
             DB::schema()->table('news', function (Blueprint $table): void {
                 $table->integer('view_count')->default(0);
             });
         }
     }
-} 
+}

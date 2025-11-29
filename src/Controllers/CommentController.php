@@ -23,7 +23,7 @@ use Fisharebest\Webtrees\Http\Exceptions\HttpNotFoundException;
 class CommentController
 {
     use ViewResponseTrait;
-    
+
     private CommentRepository $commentRepository;
     private NewsService $newsService;
     private NewsMenu $module;
@@ -59,21 +59,21 @@ class CommentController
     {
         $tree = Validator::attributes($request)->tree();
         $user_id = Auth::id();
-        
+
         // Guest users cannot comment or users without permission
         if ($user_id === null || !$this->module->canAddComments($tree)) {
             throw new HttpAccessDeniedException(I18N::translate('You do not have permission to add comments.'));
         }
-        
+
         $news_id = Validator::queryParams($request)->integer('news_id');
         $comment = Validator::parsedBody($request)->string('comment');
-        
+
         // Validate news exists
         $news = $this->newsService->find($news_id, $tree);
         if ($news === null) {
             throw new HttpNotFoundException(I18N::translate('News not found'));
         }
-        
+
         // Validate comment
         $comment = trim($comment);
         if ($comment === '') {
@@ -115,7 +115,7 @@ class CommentController
         }
 
         $comment = $this->commentRepository->find($comments_id);
-        
+
         if ($comment === null) {
             $message = I18N::translate('Comment not found');
             FlashMessages::addMessage($message, 'danger');
@@ -145,7 +145,7 @@ class CommentController
     {
         $comments_id = Validator::queryParams($request)->integer('comments_id');
         $user_id = Auth::id();
-        
+
         if ($user_id === null) {
             return response([
                 'success' => false,
@@ -172,4 +172,4 @@ class CommentController
             ],
         ]);
     }
-} 
+}

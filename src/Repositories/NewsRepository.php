@@ -67,7 +67,7 @@ class NewsRepository
 
     /**
      * Find popular news articles sorted by popularity score
-     * 
+     *
      * @param Tree $tree
      * @param int $limit
      * @param int $minViews Minimum view count to be considered popular
@@ -80,27 +80,27 @@ class NewsRepository
             ->where('gedcom_id', '=', $tree->id())
             ->where('view_count', '>=', $minViews)
             ->count();
-            
+
         if ($newsCount === 0) {
             return [];
         }
-        
+
         try {
             $query = DB::table('news')
                 ->select('news.*')
                 ->where('news.gedcom_id', '=', $tree->id())
                 ->where('news.view_count', '>=', $minViews);
-                
+
             // Get like counts
             $likeSubquery = DB::table('news_likes')
                 ->select('news_id', DB::raw('COUNT(DISTINCT user_id) as likes_count'))
                 ->groupBy('news_id');
-                
+
             // Get comment counts
             $commentSubquery = DB::table('news_comments')
                 ->select('news_id', DB::raw('COUNT(DISTINCT comments_id) as comments_count'))
                 ->groupBy('news_id');
-                
+
             $rows = $query
                 ->leftJoinSub($likeSubquery, 'like_counts', 'news.news_id', '=', 'like_counts.news_id')
                 ->leftJoinSub($commentSubquery, 'comment_counts', 'news.news_id', '=', 'comment_counts.news_id')
@@ -144,7 +144,7 @@ class NewsRepository
 
     /**
      * Find news by category
-     * 
+     *
      * @param Tree $tree
      * @param int $categoryId
      * @param int $limit
@@ -191,7 +191,7 @@ class NewsRepository
 
     /**
      * Count news by category
-     * 
+     *
      * @param Tree $tree
      * @param int $categoryId
      * @return int
@@ -205,18 +205,18 @@ class NewsRepository
     }
 
     public function create(
-        Tree $tree, 
-        string $subject, 
-        string $brief, 
-        string $body, 
-        ?string $media_id, 
+        Tree $tree,
+        string $subject,
+        string $brief,
+        string $body,
+        ?string $media_id,
         ?Carbon $updated = null,
         ?int $categoryId = null,
         bool $isPinned = false,
         string $languages = ''
     ): News {
         $updated = $updated ?? Carbon::now();
-        
+
         // Ensure media_id is empty string instead of null (DB field is not nullable)
         $media_id = $media_id ?? '';
 
@@ -250,11 +250,11 @@ class NewsRepository
     }
 
     public function update(
-        News $news, 
-        string $subject, 
-        string $brief, 
-        string $body, 
-        ?string $media_id, 
+        News $news,
+        string $subject,
+        string $brief,
+        string $body,
+        ?string $media_id,
         Carbon $updated,
         ?int $categoryId = null,
         bool $isPinned = false,
@@ -262,7 +262,7 @@ class NewsRepository
     ): void {
         // Ensure media_id is empty string instead of null (DB field is not nullable)
         $media_id = $media_id ?? '';
-        
+
         DB::table('news')
             ->where('news_id', '=', $news->getNewsId())
             ->where('gedcom_id', '=', $news->getGedcomId())
@@ -280,7 +280,7 @@ class NewsRepository
 
     /**
      * Update the view count for a news article
-     * 
+     *
      * @param News $news
      * @return void
      */
@@ -293,14 +293,14 @@ class NewsRepository
 
     /**
      * Toggle pinned status for a news article
-     * 
+     *
      * @param News $news
      * @return bool New pinned status
      */
     public function togglePinned(News $news): bool
     {
         $newStatus = !$news->isPinned();
-        
+
         // If we're pinning this news, unpin all others first
         if ($newStatus) {
             DB::table('news')
@@ -309,13 +309,13 @@ class NewsRepository
                     'is_pinned' => false,
                 ]);
         }
-        
+
         DB::table('news')
             ->where('news_id', '=', $news->getNewsId())
             ->update([
                 'is_pinned' => $newStatus,
             ]);
-            
+
         return $newStatus;
     }
 
@@ -326,4 +326,4 @@ class NewsRepository
             ->where('gedcom_id', '=', $news->getGedcomId())
             ->delete();
     }
-} 
+}

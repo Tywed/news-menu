@@ -28,9 +28,9 @@ class CommentRepository
             $row->comment,
             Carbon::parse($row->updated)
         );
-        
+
         $comment->setRealName($row->real_name);
-        
+
         return $comment;
     }
 
@@ -75,7 +75,7 @@ class CommentRepository
             'comment' => $comment,
             'updated' => Carbon::now(),
         ]);
-        
+
         $real_name = DB::table('user')
             ->where('user_id', '=', $user_id)
             ->value('real_name');
@@ -87,9 +87,9 @@ class CommentRepository
             $comment,
             Carbon::now()
         );
-        
+
         $newComment->setRealName($real_name ?? '');
-        
+
         return $newComment;
     }
 
@@ -127,7 +127,7 @@ class CommentRepository
 
     /**
      * Get likes count for multiple comments at once
-     * 
+     *
      * @param array $commentsIds
      * @return array Associative array [comment_id => likes_count]
      */
@@ -157,7 +157,7 @@ class CommentRepository
 
     /**
      * Check which comments user has liked
-     * 
+     *
      * @param array $commentsIds
      * @param int $user_id
      * @return array Array of comment IDs that user has liked
@@ -174,4 +174,4 @@ class CommentRepository
             ->pluck('comments_id')
             ->toArray();
     }
-} 
+}

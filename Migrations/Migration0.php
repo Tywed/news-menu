@@ -35,14 +35,14 @@ class Migration0 implements MigrationInterface
                     $table->string('brief', 600)->charset('utf8')->collate('utf8_unicode_ci')->default('');
                 });
             }
-            
+
             if (!DB::schema()->hasColumn('news', 'media_id')) {
                 DB::schema()->table('news', function (Blueprint $table): void {
                     $table->string('media_id', 20)->charset('utf8')->collate('utf8_unicode_ci')->default('');
                 });
             }
         }
-        
+
         // Создаем таблицу news_likes если её нет
         if (!DB::schema()->hasTable('news_likes')) {
             DB::schema()->create('news_likes', function (Blueprint $table): void {
@@ -53,7 +53,7 @@ class Migration0 implements MigrationInterface
                 $table->foreign('user_id')->references('user_id')->on('user')->onDelete('CASCADE');
             });
         }
-        
+
         // Создаем таблицу news_comments если её нет
         if (!DB::schema()->hasTable('news_comments')) {
             DB::schema()->create('news_comments', function (Blueprint $table): void {
@@ -66,7 +66,7 @@ class Migration0 implements MigrationInterface
                 $table->foreign('user_id')->references('user_id')->on('user')->onDelete('CASCADE');
             });
         }
-        
+
         // Создаем таблицу comments_likes если её нет
         if (!DB::schema()->hasTable('comments_likes')) {
             DB::schema()->create('comments_likes', function (Blueprint $table): void {

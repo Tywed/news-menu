@@ -8,7 +8,7 @@ class Category
     private string $name; // Fallback name from parent table
     private ?string $description;
     private int $sortOrder;
-    
+
     /**
      * Translations cache: ['language' => 'name']
      * @var array<string, string>
@@ -50,7 +50,7 @@ class Category
 
     /**
      * Get the category name
-     * 
+     *
      * @param string|null $language Language code (e.g., 'en', 'de', 'en-GB')
      *                              If null, returns fallback name from parent table
      * @return string
@@ -61,12 +61,12 @@ class Category
         if ($language === null) {
             return $this->name;
         }
-        
+
         // Try exact language match first
         if (isset($this->translations[$language])) {
             return $this->translations[$language];
         }
-        
+
         // Try fallback: if 'en-GB' requested but not found, try 'en'
         if (strlen($language) > 2) {
             $baseLanguage = substr($language, 0, 2);
@@ -74,7 +74,7 @@ class Category
                 return $this->translations[$baseLanguage];
             }
         }
-        
+
         // Try reverse: if 'en' requested but not found, try to find any 'en-*' variant
         if (strlen($language) === 2) {
             foreach ($this->translations as $lang => $name) {
@@ -83,14 +83,14 @@ class Category
                 }
             }
         }
-        
+
         // If no translation found, return fallback name
         return $this->name;
     }
-    
+
     /**
      * Set translations cache
-     * 
+     *
      * @param array<string, string> $translations ['language' => 'name']
      * @return void
      */
@@ -98,10 +98,10 @@ class Category
     {
         $this->translations = $translations;
     }
-    
+
     /**
      * Get all translations
-     * 
+     *
      * @return array<string, string> ['language' => 'name']
      */
     public function getTranslations(): array
@@ -128,4 +128,4 @@ class Category
     {
         return $this->sortOrder;
     }
-} 
+}

@@ -24,4 +24,4 @@ class Migration2
             });
         }
     }
-} 
+}

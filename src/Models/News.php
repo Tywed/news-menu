@@ -115,4 +115,4 @@ class News
 
         return Registry::mediaFactory()->make($this->media_id, $tree);
     }
-} 
+}

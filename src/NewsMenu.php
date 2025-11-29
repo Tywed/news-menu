@@ -453,7 +453,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
         $this->setPreference('min_role_comments', $min_role_comments);
         $this->setPreference('min_role_view_comments', $min_role_view_comments);
 
-        $message = I18N::translate('The preferences for the module " %s " have been updated.', $this->title());
+        $message = I18N::translate('The preferences for the module "%s" have been updated.', $this->title());
         FlashMessages::addMessage($message, 'success');
 
         return redirect($this->getConfigLink());

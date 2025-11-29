@@ -5,7 +5,7 @@ use Fisharebest\Webtrees\I18N;
 return [
     'Write a comment' => 'Écrire un commentaire',
     'Latest news' => 'Dernières nouvelles',
-    'Have you already put a like' => 'Vous avez déjà mis un "j\'aime"',
+    'You have already put a like' => 'Vous avez déjà mis un "j\'aime"',
     'Add new media object' => 'Ajouter un nouvel objet média',
     'Photo (enter the name of the previously added media file)' => 'Photo (entrez le nom du fichier média précédemment ajouté)',
     '%s comment' . I18N::PLURAL . '%s comments' => '%s commentaire' . I18N::PLURAL . '%s commentaires',

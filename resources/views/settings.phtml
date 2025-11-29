@@ -78,6 +78,9 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                 </legend>
                 <div class="col-sm-4">
                     <select class="form-select" name="min_role_comments">
+                        <option value="member" <?php echo ($min_role_comments ?? 'editor') === 'member' ? 'selected' : ''; ?>>
+                            <?php echo I18N::translate('Member'); ?>
+                        </option>
                         <option value="editor" <?php echo ($min_role_comments ?? 'editor') === 'editor' ? 'selected' : ''; ?>>
                             <?php echo I18N::translate('Editor'); ?>
                         </option>

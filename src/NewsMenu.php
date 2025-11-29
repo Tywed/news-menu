@@ -546,6 +546,8 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
         $min_role = $this->getPreference('min_role_comments', 'editor');
         
         switch ($min_role) {
+            case 'member':
+                return Auth::isMember($tree);
             case 'editor':
                 return Auth::isEditor($tree);
             case 'moderator':

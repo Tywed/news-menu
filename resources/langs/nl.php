@@ -100,4 +100,11 @@ return [
     'You do not have permission to add comments.' => 'U heeft geen toestemming om opmerkingen toe te voegen.',
     'The preferences for the module "%s" have been updated.' => 'De voorkeuren voor de module "%s" zijn bijgewerkt.',
     '%s does not exist.' => '%s bestaat niet.',
+    'Author:' => 'Auteur:',
+    'News by %s' => 'Nieuws van %s',
+    'Author not found' => 'Auteur niet gevonden',
+    'Unknown' => 'Onbekend',
+    'You must be logged in to create news' => 'U moet ingelogd zijn om nieuws te maken',
+    'Show author information' => 'Auteurinformatie weergeven',
+    'Display author name and link to author page' => 'Auteursnaam en link naar auteurs pagina weergeven',
 ];

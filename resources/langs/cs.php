@@ -100,4 +100,11 @@ return [
     'You do not have permission to add comments.' => 'Nemáte oprávnění přidávat komentáře.',
     'The preferences for the module "%s" have been updated.' => 'Předvolby modulu "%s" byly aktualizovány.',
     '%s does not exist.' => '%s neexistuje.',
+    'Author:' => 'Autor:',
+    'News by %s' => 'Zprávy od %s',
+    'Author not found' => 'Autor nenalezen',
+    'Unknown' => 'Neznámý',
+    'You must be logged in to create news' => 'Musíte být přihlášeni, abyste mohli vytvářet zprávy',
+    'Show author information' => 'Zobrazit informace o autorovi',
+    'Display author name and link to author page' => 'Zobrazit jméno autora a odkaz na stránku autora',
 ];

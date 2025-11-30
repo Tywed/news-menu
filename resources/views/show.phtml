@@ -83,6 +83,20 @@ use Fisharebest\Webtrees\Registry;
               </div>
             </div>
 
+            <!-- Author -->
+            <?php if ($module->showAuthor() && isset($author_user_id) && $author_user_id): ?>
+              <div class="mb-3">
+                <span class="text-muted"><?php echo I18N::translate('Author:'); ?></span>
+                <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'Author', 'user_id' => $author_user_id, 'tree' => $tree->name()])); ?>" class="text-decoration-none">
+                  <?php if (isset($author_individual) && $author_individual): ?>
+                    <?php echo strip_tags($author_individual->fullName()); ?>
+                  <?php else: ?>
+                    <?php echo e($author); ?>
+                  <?php endif; ?>
+                </a>
+              </div>
+            <?php endif; ?>
+
             <!-- Body news -->
             <div class="card-body">
               <div class="d-flex justify-content-between mb-3">

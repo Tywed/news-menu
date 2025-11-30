@@ -11,6 +11,7 @@ class News
 {
     private int $news_id;
     private int $gedcom_id;
+    private int $user_id;
     private string $subject;
     private string $brief;
     private string $body;
@@ -24,6 +25,7 @@ class News
     public function __construct(
         int $news_id,
         int $gedcom_id,
+        int $user_id,
         string $subject,
         string $brief,
         string $body,
@@ -36,6 +38,7 @@ class News
     ) {
         $this->news_id = $news_id;
         $this->gedcom_id = $gedcom_id;
+        $this->user_id = $user_id;
         $this->subject = $subject;
         $this->brief = $brief;
         $this->body = $body;
@@ -55,6 +58,11 @@ class News
     public function getGedcomId(): int
     {
         return $this->gedcom_id;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->user_id;
     }
 
     public function getSubject(): string

@@ -188,8 +188,15 @@ class NewsController
             }
         }
         
-        // Get the author of the news (for now using a placeholder)
-        $author = 'Administrator';
+        // Get the author of the news
+        $authorUserId = $news->getUserId();
+        $authorUser = $this->userService->find($authorUserId);
+        $author = $authorUser ? $authorUser->userName() : I18N::translate('Unknown');
+        $authorIndividual = null;
+        if ($authorUser !== null) {
+            $gedcom_id = $tree->getUserPreference($authorUser, 'gedcomid');
+            $authorIndividual = Registry::individualFactory()->make($gedcom_id, $tree);
+        }
         
         // Filter articles by current language, excluding current news
         $articles = $this->filterByLanguage($articles, $news_id);
@@ -220,6 +227,8 @@ class NewsController
             'is_pinned' => $news->isPinned(),
             'view_count' => $news->getViewCount(),
             'author' => $author,
+            'author_user_id' => $authorUserId,
+            'author_individual' => $authorIndividual,
             'date' => $news->getUpdated()->format('Y-m-d'),
             'limit_comments' => $limit_comments,
         ]);
@@ -365,6 +374,16 @@ class NewsController
             if ($news === null) {
                 throw new HttpNotFoundException(I18N::translate('%s does not exist.', 'news_id:' . $news_id));
             }
+            
+            // If news has no author (old news), set current user as author
+            $userId = null;
+            if ($news->getUserId() === 0) {
+                $currentUserId = Auth::id();
+                if ($currentUserId !== null) {
+                    $userId = $currentUserId;
+                }
+            }
+            
             $this->newsService->update(
                 $news, 
                 $subject, 
@@ -374,12 +393,19 @@ class NewsController
                 $updatedDate,
                 $category_id,
                 $is_pinned,
-                $languages_str
+                $languages_str,
+                $userId
             );
             FlashMessages::addMessage(I18N::translate('News updated successfully'), 'success');
         } else {
+            $user_id = Auth::id();
+            if ($user_id === null) {
+                throw new HttpAccessDeniedException(I18N::translate('You must be logged in to create news'));
+            }
+            
             $this->newsService->create(
-                $tree, 
+                $tree,
+                $user_id,
                 $subject, 
                 $brief, 
                 $body, 
@@ -507,6 +533,67 @@ class NewsController
             'current' => $currentPage,
             'categories' => $categories,
             'current_category' => $currentCategory,
+        ]);
+    }
+
+    /**
+     * Show news by author
+     * 
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function author(ServerRequestInterface $request): ResponseInterface
+    {
+        $tree = Validator::attributes($request)->tree();
+        $user_id = Validator::queryParams($request)->integer('user_id');
+        $currentPage = Validator::queryParams($request)->integer('page', 1);
+        $limit = Validator::queryParams($request)->integer('limit', 5);
+
+        $offset = ($currentPage - 1) * $limit;
+
+        // Get author user
+        $authorUser = $this->userService->find($user_id);
+        if ($authorUser === null) {
+            throw new HttpNotFoundException(I18N::translate('Author not found'));
+        }
+
+        // Get author's individual if exists
+        $authorIndividual = null;
+        $gedcom_id = $tree->getUserPreference($authorUser, 'gedcomid');
+        if ($gedcom_id) {
+            $authorIndividual = Registry::individualFactory()->make($gedcom_id, $tree);
+        }
+
+        // Get all categories for sidebar
+        $categories = $this->categoryRepository->findAll();
+
+        // Get news by author
+        $articles = $this->newsService->findByAuthor($tree, $user_id, $limit, $offset);
+        $totalArticles = $this->newsService->countByAuthor($tree, $user_id);
+
+        // Convert array to Collection and filter by language
+        $articles = $this->filterByLanguage($this->ensureCollection($articles));
+
+        // Get author name - prefer Individual name if available
+        if ($authorIndividual !== null) {
+            $authorName = strip_tags($authorIndividual->fullName());
+        } else {
+            $authorName = $authorUser->userName();
+        }
+
+        return $this->viewResponse($this->module->name() . '::page-news-author', [
+            'title' => I18N::translate('Author:') . ' ' . $authorName,
+            'module_name' => $this->module->name(),
+            'module' => $this->module,
+            'tree' => $tree,
+            'articles' => $articles,
+            'limit' => $limit,
+            'totalArticles' => $totalArticles,
+            'current' => $currentPage,
+            'categories' => $categories,
+            'author_user' => $authorUser,
+            'author_individual' => $authorIndividual,
+            'author_name' => $authorName,
         ]);
     }
 

@@ -100,4 +100,11 @@ return [
     'You do not have permission to add comments.' => 'No tens permís per afegir comentaris.',
     'The preferences for the module "%s" have been updated.' => 'Les preferències del mòdul "%s" han estat actualitzades.',
     '%s does not exist.' => '%s no existeix.',
+    'Author:' => 'Autor:',
+    'News by %s' => 'Notícies de %s',
+    'Author not found' => 'Autor no trobat',
+    'Unknown' => 'Desconegut',
+    'You must be logged in to create news' => 'Has d\'iniciar sessió per crear notícies',
+    'Show author information' => 'Mostrar informació de l\'autor',
+    'Display author name and link to author page' => 'Mostrar nom de l\'autor i enllaç a la pàgina de l\'autor',
 ];

@@ -359,6 +359,17 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     }
 
     /**
+     * Show news by author
+     * 
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function getAuthorAction(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->newsController->author($request);
+    }
+
+    /**
      * Toggle pinned status of a news article
      * 
      * @param ServerRequestInterface $request
@@ -391,6 +402,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
             'min_role_news' => $this->getPreference('min_role_news', 'manager'),
             'min_role_comments' => $this->getPreference('min_role_comments', 'editor'),
             'min_role_view_comments' => $this->getPreference('min_role_view_comments', 'visitor'),
+            'show_author' => $this->getPreference('show_author', '1'),
             'categories' => $categories,
             'module_name' => $this->name(),
             'available_languages' => $this->getAvailableLanguages(),
@@ -445,6 +457,9 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
             $min_role_view_comments = 'visitor';
         }
 
+        // Handle show_author checkbox (checkbox returns '1' if checked, null if unchecked)
+        $show_author = isset($params['show_author']) && $params['show_author'] === '1' ? '1' : '0';
+
         $this->setPreference('news_menu_order', (string)$news_menu_order);
         $this->setPreference('limit_news', (string)$limit_news);
         $this->setPreference('limit_comments', (string)$limit_comments);
@@ -452,6 +467,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
         $this->setPreference('min_role_news', $min_role_news);
         $this->setPreference('min_role_comments', $min_role_comments);
         $this->setPreference('min_role_view_comments', $min_role_view_comments);
+        $this->setPreference('show_author', $show_author);
 
         $message = I18N::translate('The preferences for the module "%s" have been updated.', $this->title());
         FlashMessages::addMessage($message, 'success');
@@ -533,6 +549,16 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
             default:
                 return Auth::isManager($tree);
         }
+    }
+
+    /**
+     * Check if author information should be displayed
+     * 
+     * @return bool
+     */
+    public function showAuthor(): bool
+    {
+        return $this->getPreference('show_author', '1') === '1';
     }
 
     /**

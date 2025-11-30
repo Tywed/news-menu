@@ -100,4 +100,11 @@ return [
     'You do not have permission to add comments.' => 'У вас нет прав для добавления комментариев.',
     'The preferences for the module "%s" have been updated.' => 'Настройки модуля "%s" были обновлены.',
     '%s does not exist.' => '%s не существует.',
+    'Author:' => 'Автор:',
+    'News by %s' => 'Новости от %s',
+    'Author not found' => 'Автор не найден',
+    'Unknown' => 'Неизвестно',
+    'You must be logged in to create news' => 'Вы должны быть авторизованы для создания новостей',
+    'Show author information' => 'Показывать информацию об авторе',
+    'Display author name and link to author page' => 'Отображать имя автора и ссылку на страницу автора',
 ];

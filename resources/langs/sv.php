@@ -100,4 +100,11 @@ return [
     'You do not have permission to add comments.' => 'Du har inte behörighet att lägga till kommentarer.',
     'The preferences for the module "%s" have been updated.' => 'Inställningarna för modulen "%s" har uppdaterats.',
     '%s does not exist.' => '%s existerar inte.',
+    'Author:' => 'Författare:',
+    'News by %s' => 'Nyheter av %s',
+    'Author not found' => 'Författare hittades inte',
+    'Unknown' => 'Okänd',
+    'You must be logged in to create news' => 'Du måste vara inloggad för att skapa nyheter',
+    'Show author information' => 'Visa författarinformation',
+    'Display author name and link to author page' => 'Visa författarnamn och länk till författarsida',
 ];

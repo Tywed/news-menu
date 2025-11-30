@@ -100,4 +100,11 @@ return [
     'You do not have permission to add comments.' => 'Du har ikke tilladelse til at tilføje kommentarer.',
     'The preferences for the module "%s" have been updated.' => 'Præferencerne for modulet "%s" er blevet opdateret.',
     '%s does not exist.' => '%s findes ikke.',
+    'Author:' => 'Forfatter:',
+    'News by %s' => 'Nyheder af %s',
+    'Author not found' => 'Forfatter ikke fundet',
+    'Unknown' => 'Ukendt',
+    'You must be logged in to create news' => 'Du skal være logget ind for at oprette nyheder',
+    'Show author information' => 'Vis forfatterinformation',
+    'Display author name and link to author page' => 'Vis forfatternavn og link til forfatterside',
 ];

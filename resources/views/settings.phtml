@@ -119,6 +119,20 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                 </div>
             </fieldset>
 
+            <fieldset class="row mb-4">
+                <legend class="col-form-label col-sm-7">
+                    <?php echo I18N::translate('Show author information'); ?>
+                </legend>
+                <div class="col-sm-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="show_author" id="show_author" value="1" <?php echo ($show_author ?? '1') === '1' ? 'checked' : ''; ?>>
+                        <label class="form-check-label" for="show_author">
+                            <?php echo I18N::translate('Display author name and link to author page'); ?>
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+
             <div class="row mb-3">
                 <div class="offset-sm-3 col-sm-9">
                     <button type="submit" class="btn btn-primary">

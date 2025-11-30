@@ -100,4 +100,11 @@ return [
     'You do not have permission to add comments.' => 'No tienes permiso para añadir comentarios.',
     'The preferences for the module "%s" have been updated.' => 'Las preferencias del módulo "%s" han sido actualizadas.',
     '%s does not exist.' => '%s no existe.',
+    'Author:' => 'Autor:',
+    'News by %s' => 'Noticias por %s',
+    'Author not found' => 'Autor no encontrado',
+    'Unknown' => 'Desconocido',
+    'You must be logged in to create news' => 'Debes iniciar sesión para crear noticias',
+    'Show author information' => 'Mostrar información del autor',
+    'Display author name and link to author page' => 'Mostrar nombre del autor y enlace a la página del autor',
 ];

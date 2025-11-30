@@ -7,8 +7,6 @@ use Fisharebest\Webtrees\I18N;
 use Fisharebest\Webtrees\Tree;
 use Fisharebest\Webtrees\Timestamp;
 use Fisharebest\Webtrees\Registry;
-use Fisharebest\Webtrees\Services\UserService;
-use Tywed\Webtrees\Module\NewsMenu\Helpers\AppHelper;
 use Illuminate\Support\Collection;
 
 /**
@@ -95,33 +93,6 @@ use Illuminate\Support\Collection;
                                         ?>
                                     </p>
 
-                                    <?php if ($module->showAuthor()): ?>
-                                    <p class="small text-muted mt-2">
-                                        <span><?php echo I18N::translate('Author:'); ?></span>
-                                        <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'Author', 'user_id' => $article->getUserId(), 'tree' => $tree->name()])); ?>" class="text-decoration-none">
-                                            <?php
-                                            $userService = AppHelper::get(UserService::class);
-                                            $authorUser = $userService->find($article->getUserId());
-                                            if ($authorUser) {
-                                                $gedcom_id = $tree->getUserPreference($authorUser, 'gedcomid');
-                                                if ($gedcom_id) {
-                                                    $authorIndividual = Registry::individualFactory()->make($gedcom_id, $tree);
-                                                    if ($authorIndividual) {
-                                                        echo strip_tags($authorIndividual->fullName());
-                                                    } else {
-                                                        echo e($authorUser->userName());
-                                                    }
-                                                } else {
-                                                    echo e($authorUser->userName());
-                                                }
-                                            } else {
-                                                echo I18N::translate('Unknown');
-                                            }
-                                            ?>
-                                        </a>
-                                    </p>
-                                    <?php endif; ?>
-
                                     <?php if ($module->canEditNews($tree)) : ?>
                                         <hr />
                                         <form method="post" action="<?php echo e(route('module', ['module' => $module_name, 'action' => 'DeleteNews', 'news_id' => $article->getNewsId(), 'tree' => $tree->name()])); ?>" class="d-inline">
@@ -168,7 +139,7 @@ use Illuminate\Support\Collection;
                         </a>
                     </li>
                     <?php foreach ($categories ?? [] as $category): ?>
-                        <li class="list-group-item wt-list-item <?php echo isset($current_category) && $current_category->getCategoryId() === $category->getCategoryId() ? 'active' : ''; ?>">
+                        <li class="list-group-item wt-list-item">
                             <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'Category', 'category_id' => $category->getCategoryId(), 'tree' => $tree->name()])); ?>" class="text-decoration-none">
                                 <?php echo e($category->getName(\Fisharebest\Webtrees\I18N::languageTag())); ?>
                             </a>
@@ -177,26 +148,6 @@ use Illuminate\Support\Collection;
                 </ul>
             </div>
         </div>
-        
-        <!-- Popular News Sidebar -->
-        <?php if (!empty($popular_articles ?? [])): ?>
-            <div class="card mb-4 wt-block">
-                <div class="card-header wt-block-header">
-                    <h5 class="mb-0"><?php echo I18N::translate('Popular News'); ?></h5>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush wt-list">
-                        <?php foreach ($popular_articles ?? [] as $article): ?>
-                            <li class="list-group-item wt-list-item">
-                                <a href="<?php echo e(route('module', ['module' => $module_name, 'action' => 'ShowNews', 'news_id' => $article->getNewsId(), 'tree' => $tree->name()])); ?>" class="text-decoration-none">
-                                    <?php echo e($article->getSubject()); ?>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
-        <?php endif; ?>
     </div>
 </div>
 
@@ -242,3 +193,4 @@ use Illuminate\Support\Collection;
         }
     });
 </script>
+

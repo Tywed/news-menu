@@ -30,6 +30,12 @@ class Migration0 implements MigrationInterface
             });
         } else {
             // Проверяем наличие колонок и добавляем их при необходимости
+            if (!DB::schema()->hasColumn('news', 'user_id')) {
+                DB::schema()->table('news', function (Blueprint $table): void {
+                    $table->integer('user_id')->default(0)->after('news_id');
+                });
+            }
+            
             if (!DB::schema()->hasColumn('news', 'brief')) {
                 DB::schema()->table('news', function (Blueprint $table): void {
                     $table->string('brief', 600)->charset('utf8')->collate('utf8_unicode_ci')->default('');

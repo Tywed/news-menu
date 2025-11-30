@@ -100,4 +100,11 @@ return [
     'You do not have permission to add comments.' => 'Þú hefur ekki heimild til að bæta við athugasemdum.',
     'The preferences for the module "%s" have been updated.' => 'Stillingar fyrir eininguna "%s" hafa verið uppfærðar.',
     '%s does not exist.' => '%s er ekki til.',
+    'Author:' => 'Höfundur:',
+    'News by %s' => 'Fréttir eftir %s',
+    'Author not found' => 'Höfundur fannst ekki',
+    'Unknown' => 'Óþekkt',
+    'You must be logged in to create news' => 'Þú verður að vera skráður inn til að búa til fréttir',
+    'Show author information' => 'Sýna upplýsingar um höfund',
+    'Display author name and link to author page' => 'Sýna nafn höfundar og tengil á síðu höfundar',
 ];

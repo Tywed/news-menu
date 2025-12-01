@@ -23,6 +23,7 @@ class NewsRepository
         return new News(
             $row->news_id,
             $row->gedcom_id,
+            (int)($row->user_id ?? 0),
             $row->subject,
             $row->brief,
             $row->body,
@@ -50,6 +51,7 @@ class NewsRepository
             $news[] = new News(
                 $row->news_id,
                 $row->gedcom_id,
+                (int)($row->user_id ?? 0),
                 $row->subject,
                 $row->brief,
                 $row->body,
@@ -127,6 +129,7 @@ class NewsRepository
             $news[] = new News(
                 $row->news_id,
                 $row->gedcom_id,
+                (int)($row->user_id ?? 0),
                 $row->subject,
                 $row->brief,
                 $row->body,
@@ -167,6 +170,7 @@ class NewsRepository
             $news[] = new News(
                 $row->news_id,
                 $row->gedcom_id,
+                (int)($row->user_id ?? 0),
                 $row->subject,
                 $row->brief,
                 $row->body,
@@ -204,12 +208,69 @@ class NewsRepository
             ->count();
     }
 
+    /**
+     * Find news by author (user_id)
+     * 
+     * @param Tree $tree
+     * @param int $userId
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public function findByAuthor(Tree $tree, int $userId, int $limit = 5, int $offset = 0): array
+    {
+        $rows = DB::table('news')
+            ->where('gedcom_id', '=', $tree->id())
+            ->where('user_id', '=', $userId)
+            ->orderBy('is_pinned', 'desc')
+            ->orderByDesc('updated')
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
+
+        $news = [];
+        foreach ($rows as $row) {
+            $news[] = new News(
+                $row->news_id,
+                $row->gedcom_id,
+                (int)($row->user_id ?? 0),
+                $row->subject,
+                $row->brief,
+                $row->body,
+                $row->media_id,
+                Carbon::parse($row->updated),
+                $row->category_id ?? null,
+                $row->languages ?? '',
+                (bool)($row->is_pinned ?? false),
+                (int)($row->view_count ?? 0)
+            );
+        }
+
+        return $news;
+    }
+
+    /**
+     * Count news by author
+     * 
+     * @param Tree $tree
+     * @param int $userId
+     * @return int
+     */
+    public function countByAuthor(Tree $tree, int $userId): int
+    {
+        return DB::table('news')
+            ->where('gedcom_id', '=', $tree->id())
+            ->where('user_id', '=', $userId)
+            ->count();
+    }
+
     public function create(
         Tree $tree,
-        string $subject,
-        string $brief,
-        string $body,
-        ?string $media_id,
+        int $user_id,
+        string $subject, 
+        string $brief, 
+        string $body, 
+        ?string $media_id, 
         ?Carbon $updated = null,
         ?int $categoryId = null,
         bool $isPinned = false,
@@ -223,6 +284,7 @@ class NewsRepository
         // Create a new News record
         $news_id = DB::table('news')->insertGetId([
             'gedcom_id' => $tree->id(),
+            'user_id' => $user_id,
             'subject' => $subject,
             'brief' => $brief,
             'body' => $body,
@@ -237,6 +299,7 @@ class NewsRepository
         return new News(
             $news_id,
             $tree->id(),
+            $user_id,
             $subject,
             $brief,
             $body,
@@ -258,24 +321,32 @@ class NewsRepository
         Carbon $updated,
         ?int $categoryId = null,
         bool $isPinned = false,
-        string $languages = ''
+        string $languages = '',
+        ?int $userId = null
     ): void {
         // Ensure media_id is empty string instead of null (DB field is not nullable)
         $media_id = $media_id ?? '';
-
+        
+        $updateData = [
+            'subject' => $subject,
+            'brief' => $brief,
+            'body' => $body,
+            'media_id' => $media_id,
+            'updated' => $updated,
+            'category_id' => $categoryId,
+            'languages' => $languages,
+            'is_pinned' => $isPinned,
+        ];
+        
+        // Update user_id only if provided (for old news without author)
+        if ($userId !== null) {
+            $updateData['user_id'] = $userId;
+        }
+        
         DB::table('news')
             ->where('news_id', '=', $news->getNewsId())
             ->where('gedcom_id', '=', $news->getGedcomId())
-            ->update([
-                'subject' => $subject,
-                'brief' => $brief,
-                'body' => $body,
-                'media_id' => $media_id,
-                'updated' => $updated,
-                'category_id' => $categoryId,
-                'languages' => $languages,
-                'is_pinned' => $isPinned,
-            ]);
+            ->update($updateData);
     }
 
     /**

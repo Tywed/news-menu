@@ -87,6 +87,32 @@ class NewsService
     }
 
     /**
+     * Find news by author
+     *
+     * @param Tree $tree
+     * @param int $userId
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public function findByAuthor(Tree $tree, int $userId, int $limit = 5, int $offset = 0): array
+    {
+        return $this->newsRepository->findByAuthor($tree, $userId, $limit, $offset);
+    }
+
+    /**
+     * Count news by author
+     *
+     * @param Tree $tree
+     * @param int $userId
+     * @return int
+     */
+    public function countByAuthor(Tree $tree, int $userId): int
+    {
+        return $this->newsRepository->countByAuthor($tree, $userId);
+    }
+
+    /**
      * Get all categories
      *
      * @return array
@@ -98,6 +124,7 @@ class NewsService
 
     public function create(
         Tree $tree,
+        int $user_id,
         string $subject,
         string $brief,
         string $body,
@@ -113,10 +140,11 @@ class NewsService
 
         return $this->newsRepository->create(
             $tree,
-            $subject,
-            $brief,
-            $body,
-            $media_id,
+            $user_id,
+            $subject, 
+            $brief, 
+            $body, 
+            $media_id, 
             $updated,
             $categoryId,
             $isPinned,
@@ -133,7 +161,8 @@ class NewsService
         Carbon $updated,
         ?int $categoryId = null,
         bool $isPinned = false,
-        string $languages = ''
+        string $languages = '',
+        ?int $userId = null
     ): void {
         $subject = $this->htmlService->sanitize($subject);
         $brief = $this->htmlService->sanitize($brief);
@@ -148,7 +177,8 @@ class NewsService
             $updated,
             $categoryId,
             $isPinned,
-            $languages
+            $languages,
+            $userId
         );
     }
 

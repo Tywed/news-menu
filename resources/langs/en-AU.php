@@ -100,4 +100,11 @@ return [
     'You do not have permission to add comments.' => 'You do not have permission to add comments.',
     'The preferences for the module "%s" have been updated.' => 'The preferences for the module "%s" have been updated.',
     '%s does not exist.' => '%s does not exist.',
+    'Author:' => 'Author:',
+    'News by %s' => 'News by %s',
+    'Author not found' => 'Author not found',
+    'Unknown' => 'Unknown',
+    'You must be logged in to create news' => 'You must be logged in to create news',
+    'Show author information' => 'Show author information',
+    'Display author name and link to author page' => 'Display author name and link to author page',
 ];

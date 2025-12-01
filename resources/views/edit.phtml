@@ -38,7 +38,7 @@ use Fisharebest\Webtrees\Http\RequestHandlers\CreateMediaObjectModal;
                                 </label>
                                 <input type="datetime-local" id="updated" class="form-control" name="updated" dir="auto" value="<?php echo e($updated); ?>">
                             </div>
-                            
+
                             <div class="col-md-4">
                                 <label for="category_id" class="form-label">
                                     <?php echo I18N::translate('Category'); ?>
@@ -52,7 +52,7 @@ use Fisharebest\Webtrees\Http\RequestHandlers\CreateMediaObjectModal;
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            
+
                             <div class="col-md-4">
                                 <label class="form-label d-block">
                                     <?php echo I18N::translate('Pin to top'); ?>
@@ -174,12 +174,12 @@ use Fisharebest\Webtrees\Http\RequestHandlers\CreateMediaObjectModal;
         document.getElementById('formFile').value = null;
         frame.src = "";
     }
-    
+
     // Обработчик переключения видимости языков
     document.addEventListener('DOMContentLoaded', function() {
         const toggleLink = document.getElementById('languages-toggle');
         const languagesContainer = document.getElementById('languages-container');
-        
+
         toggleLink.addEventListener('click', function(e) {
             e.preventDefault();
             if (languagesContainer.style.display === 'none') {

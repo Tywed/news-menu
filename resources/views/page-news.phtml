@@ -12,7 +12,7 @@ use Tywed\Webtrees\Module\NewsMenu\Helpers\AppHelper;
 use Illuminate\Support\Collection;
 
 /**
- * @var Collection<int,object> $articles 
+ * @var Collection<int,object> $articles
  * @var Tree $tree */ ?>
 
 <div class="row">
@@ -47,7 +47,7 @@ use Illuminate\Support\Collection;
                                         } ?>
                                     </a>
                                 </div>
-                                
+
                                 <div class="col-md-8">
                                     <div class="d-flex justify-content-between">
                                         <div>
@@ -60,13 +60,13 @@ use Illuminate\Support\Collection;
                                                     <?php echo view('components/datetime', ['timestamp' => Registry::timestampFactory()->make($article->getUpdated()->getTimestamp())]); ?>
                                                 </span>
                                             <?php endif; ?>
-                                            
+
                                             <?php if ($article->isPinned()): ?>
                                                 <span class="badge bg-danger px-2 py-1 shadow-1-strong mb-3">
                                                     <?php echo I18N::translate('Pinned'); ?>
                                                 </span>
                                             <?php endif; ?>
-                                            
+
                                             <?php if ($article->getCategoryId()): ?>
                                                 <?php foreach ($categories as $category): ?>
                                                     <?php if ($category->getCategoryId() === $article->getCategoryId()): ?>
@@ -84,7 +84,7 @@ use Illuminate\Support\Collection;
                                             <strong><?php echo $article->getSubject(); ?></strong>
                                         </h4>
                                     </a>
-                                    
+
                                     <p class="small text-muted">
                                         <?php
                                         if ($article->getBrief()) {
@@ -153,7 +153,7 @@ use Illuminate\Support\Collection;
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3">
         <!-- Categories Sidebar -->
         <div class="card mb-4 wt-block">
@@ -177,7 +177,7 @@ use Illuminate\Support\Collection;
                 </ul>
             </div>
         </div>
-        
+
         <!-- Popular News Sidebar -->
         <?php if (!empty($popular_articles ?? [])): ?>
             <div class="card mb-4 wt-block">
@@ -218,7 +218,7 @@ use Illuminate\Support\Collection;
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let mybutton = document.getElementById("btn-back-to-top");
-        
+
         window.onscroll = function() {
             scrollFunction();
         };

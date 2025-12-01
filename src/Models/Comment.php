@@ -96,4 +96,4 @@ class Comment
     {
         $this->real_name = $real_name;
     }
-} 
+}

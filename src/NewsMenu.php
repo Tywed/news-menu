@@ -38,7 +38,7 @@ use Tywed\Webtrees\Module\NewsMenu\Helpers\AppHelper;
 
 /**
  * News Menu Module
- * 
+ *
  * A module that provides a news system for Webtrees
  */
 class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMenuInterface, ModuleGlobalInterface, ModuleConfigInterface, MiddlewareInterface
@@ -134,17 +134,17 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
         // Run migrations
         $migrations_namespace = __NAMESPACE__ . '\Migrations';
-        
+
         AppHelper::get(MigrationService::class)->updateSchema(
             $migrations_namespace,
-            self::SETTING_SCHEMA_NAME, 
+            self::SETTING_SCHEMA_NAME,
             self::SCHEMA_VERSION
         );
     }
 
     /**
      * HTTP request processing
-     * 
+     *
      * @param ServerRequestInterface $request
      * @param RequestHandlerInterface $handler
      * @return ResponseInterface
@@ -156,7 +156,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Path to module resources
-     * 
+     *
      * @return string
      */
     public function resourcesFolder(): string
@@ -167,30 +167,30 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     /**
      * Get list of available languages from Webtrees
      * Uses I18N::activeLocales() to get languages that are actually installed and active
-     * 
+     *
      * @return array<string> Language codes (e.g., ['en', 'de', 'ru', 'en-GB'])
      */
     public function getAvailableLanguages(): array
     {
         $locales = I18N::activeLocales();
         $languages = [];
-        
+
         foreach ($locales as $locale) {
             $languageTag = $locale->languageTag();
             $languages[] = $languageTag;
         }
-        
+
         // Fallback: if no locales found, return common languages
         if (empty($languages)) {
             $languages = ['en', 'de'];
         }
-        
+
         return array_unique($languages);
     }
 
     /**
      * Load translations
-     * 
+     *
      * @param string $language
      * @return array
      */
@@ -205,7 +205,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Get the default menu order
-     * 
+     *
      * @return int
      */
     public function defaultMenuOrder(): int
@@ -215,7 +215,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Get the menu for this module
-     * 
+     *
      * @param Tree $tree
      * @return Menu|null
      */
@@ -238,7 +238,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Add CSS files
-     * 
+     *
      * @return string
      */
     public function headContent(): string
@@ -250,7 +250,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Display the news page
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -261,7 +261,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Show a single news entry
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -272,7 +272,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Edit news form
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -283,7 +283,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Update a news entry
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -294,7 +294,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Delete a news entry
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -305,7 +305,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Like a news entry
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -316,7 +316,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Create a comment
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -327,7 +327,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Delete a comment
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -338,7 +338,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Like a comment
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -349,7 +349,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Show news filtered by category
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -371,7 +371,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Toggle pinned status of a news article
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -382,7 +382,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Admin settings page
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -411,7 +411,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Save admin settings
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -424,29 +424,29 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
         $limit_news = Validator::parsedBody($request)->integer('limit_news', 5);
         $limit_comments = Validator::parsedBody($request)->integer('limit_comments', 5);
         $min_views_popular = Validator::parsedBody($request)->integer('min_views_popular', 5);
-        
+
         // Validate limits
         if ($limit_news < 1 || $limit_news > 100) {
             FlashMessages::addMessage(I18N::translate('News limit must be between 1 and 100'), 'danger');
             return redirect($this->getConfigLink());
         }
-        
+
         if ($limit_comments < 1 || $limit_comments > 100) {
             FlashMessages::addMessage(I18N::translate('Comments limit must be between 1 and 100'), 'danger');
             return redirect($this->getConfigLink());
         }
-        
+
         if ($min_views_popular < 0) {
             FlashMessages::addMessage(I18N::translate('Minimum views for popular must be 0 or greater'), 'danger');
             return redirect($this->getConfigLink());
         }
-        
+
         // Validate roles
         $validRoles = ['visitor', 'member', 'editor', 'moderator', 'manager'];
         $min_role_news = $params['min_role_news'] ?? 'manager';
         $min_role_comments = $params['min_role_comments'] ?? 'editor';
         $min_role_view_comments = $params['min_role_view_comments'] ?? 'visitor';
-        
+
         if (!in_array($min_role_news, $validRoles)) {
             $min_role_news = 'manager';
         }
@@ -477,7 +477,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Add a new category
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -488,7 +488,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Edit category form
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -496,10 +496,10 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
     {
         return $this->categoryController->edit($request);
     }
-    
+
     /**
      * Update category
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -510,7 +510,7 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Delete a category
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -532,14 +532,14 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Check if the user can edit news
-     * 
+     *
      * @param Tree $tree
      * @return boolean
      */
     public function canEditNews(Tree $tree): bool
     {
         $min_role = $this->getPreference('min_role_news', 'manager');
-        
+
         switch ($min_role) {
             case 'editor':
                 return Auth::isEditor($tree);
@@ -563,14 +563,14 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Check if the user can add comments
-     * 
+     *
      * @param Tree $tree
      * @return boolean
      */
     public function canAddComments(Tree $tree): bool
     {
         $min_role = $this->getPreference('min_role_comments', 'editor');
-        
+
         switch ($min_role) {
             case 'member':
                 return Auth::isMember($tree);
@@ -587,14 +587,14 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
 
     /**
      * Check if the user can view comments
-     * 
+     *
      * @param Tree $tree
      * @return boolean
      */
     public function canViewComments(Tree $tree): bool
     {
         $min_role = $this->getPreference('min_role_view_comments', 'visitor');
-        
+
         switch ($min_role) {
             case 'visitor':
                 return true;
@@ -610,4 +610,4 @@ class NewsMenu extends AbstractModule implements ModuleCustomInterface, ModuleMe
                 return true;
         }
     }
-} 
+}

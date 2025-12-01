@@ -35,10 +35,10 @@ class CategoryRepository
             $translations
         );
     }
-    
+
     /**
      * Get translations for a category
-     * 
+     *
      * @param int $categoryId
      * @return array<string, string> ['language' => 'name']
      */
@@ -47,18 +47,18 @@ class CategoryRepository
         $rows = DB::table('news_category_translations')
             ->where('category_id', '=', $categoryId)
             ->get();
-        
+
         $translations = [];
         foreach ($rows as $row) {
             $translations[$row->language] = $row->name;
         }
-        
+
         return $translations;
     }
-    
+
     /**
      * Get translations for multiple categories (batch loading)
-     * 
+     *
      * @param array<int> $categoryIds
      * @return array<int, array<string, string>> [category_id => ['language' => 'name']]
      */
@@ -67,20 +67,20 @@ class CategoryRepository
         if (empty($categoryIds)) {
             return [];
         }
-        
+
         $rows = DB::table('news_category_translations')
             ->whereIn('category_id', $categoryIds)
             ->get();
-        
+
         $translations = [];
         foreach ($categoryIds as $id) {
             $translations[$id] = [];
         }
-        
+
         foreach ($rows as $row) {
             $translations[$row->category_id][$row->language] = $row->name;
         }
-        
+
         return $translations;
     }
 
@@ -106,7 +106,7 @@ class CategoryRepository
         $categories = [];
         foreach ($rows as $row) {
             $translations = $allTranslations[$row->category_id] ?? [];
-            
+
             $categories[] = new Category(
                 $row->category_id,
                 $row->name,
@@ -162,10 +162,10 @@ class CategoryRepository
                 'sort_order' => $sortOrder,
             ]);
     }
-    
+
     /**
      * Save or update translation for a category
-     * 
+     *
      * @param int $categoryId
      * @param string $language Language code (e.g., 'en', 'de')
      * @param string $name Translated name
@@ -178,7 +178,7 @@ class CategoryRepository
             ->where('category_id', '=', $categoryId)
             ->where('language', '=', $language)
             ->exists();
-        
+
         if ($exists) {
             // Update existing translation
             DB::table('news_category_translations')
@@ -194,10 +194,10 @@ class CategoryRepository
             ]);
         }
     }
-    
+
     /**
      * Delete translation for a category
-     * 
+     *
      * @param int $categoryId
      * @param string $language Language code
      * @return void
@@ -209,10 +209,10 @@ class CategoryRepository
             ->where('language', '=', $language)
             ->delete();
     }
-    
+
     /**
      * Delete all translations for a category
-     * 
+     *
      * @param int $categoryId
      * @return void
      */
@@ -235,4 +235,4 @@ class CategoryRepository
             ->where('category_id', '=', $category->getCategoryId())
             ->delete();
     }
-} 
+}

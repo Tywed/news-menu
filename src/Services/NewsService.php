@@ -169,11 +169,11 @@ class NewsService
         $body = $this->htmlService->sanitize($body);
 
         $this->newsRepository->update(
-            $news, 
-            $subject, 
-            $brief, 
-            $body, 
-            $media_id, 
+            $news,
+            $subject,
+            $brief,
+            $body,
+            $media_id,
             $updated,
             $categoryId,
             $isPinned,
@@ -297,4 +297,4 @@ class NewsService
     {
         return Auth::isManager($tree);
     }
-} 
+}

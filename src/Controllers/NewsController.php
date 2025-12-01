@@ -27,7 +27,7 @@ use Tywed\Webtrees\Module\NewsMenu\Repositories\CategoryRepository;
 class NewsController
 {
     use ViewResponseTrait;
-    
+
     private NewsService $newsService;
     private CommentRepository $commentRepository;
     private NewsMenu $module;
@@ -58,7 +58,7 @@ class NewsController
 
     /**
      * Filter articles by current language with optional exclusion
-     * 
+     *
      * @param Collection $articles
      * @param int|null $excludeNewsId Optional news ID to exclude from results
      * @return Collection
@@ -66,13 +66,13 @@ class NewsController
     private function filterByLanguage(Collection $articles, ?int $excludeNewsId = null): Collection
     {
         $currentLanguage = I18N::languageTag();
-        
+
         return $articles->filter(function($article) use ($currentLanguage, $excludeNewsId) {
             // Exclude specific news if provided
             if ($excludeNewsId !== null && $article->getNewsId() === $excludeNewsId) {
                 return false;
             }
-            
+
             $languages = $article->getLanguagesArray();
             // If no languages specified, show for all languages
             return empty($languages) || in_array($currentLanguage, $languages);
@@ -88,17 +88,17 @@ class NewsController
 
         $totalArticles = $this->newsService->count($tree);
         $articles = $this->ensureCollection($this->newsService->findAll($tree, $limit, $offset));
-        
+
         // Filter articles by current language
         $articles = $this->filterByLanguage($articles);
-        
+
         // Get categories for the view
         $categories = $this->newsService->getAllCategories();
-        
+
         // Try to get popular articles
         $minViews = (int)$this->module->getPreference('min_views_popular', '5');
         $popularArticles = $this->ensureCollection($this->newsService->findPopular($tree, 3, $minViews));
-        
+
         // Filter popular articles by current language
         $popularArticles = $this->filterByLanguage($popularArticles);
 
@@ -135,33 +135,33 @@ class NewsController
         $articles = $this->ensureCollection($this->newsService->findAll($tree, 5));
         $total_likes = $this->newsService->getLikesCount($news_id);
         $total_comments = $this->commentRepository->countByNews($news_id);
-        
+
         $limit_comments = (int)$this->module->getPreference('limit_comments', '5');
         // Use reasonable limit instead of 999
         $maxCommentsLimit = 100;
         $comments = $this->commentRepository->findByNews($news_id, $maxCommentsLimit);
-        
+
         $like_exists = $user_id !== null ? $this->newsService->hasUserLiked($news_id, $user_id) : false;
         $categories = $this->newsService->getAllCategories();
-        
+
         // Try to get popular articles
         $minViews = (int)$this->module->getPreference('min_views_popular', '5');
         $popularArticles = $this->ensureCollection($this->newsService->findPopular($tree, 3, $minViews));
-        
+
         // Optimize N+1 queries: batch load likes and user data
         $commentsIds = array_map(fn($c) => $c->getCommentsId(), $comments);
         $likesCounts = $this->commentRepository->getLikesCountBatch($commentsIds);
-        $userLikedComments = $user_id !== null 
-            ? $this->commentRepository->getUserLikedComments($commentsIds, $user_id) 
+        $userLikedComments = $user_id !== null
+            ? $this->commentRepository->getUserLikedComments($commentsIds, $user_id)
             : [];
-        
+
         // Get unique user IDs for batch loading
         $userIds = array_unique(array_map(fn($c) => $c->getUserId(), $comments));
         $users = [];
         foreach ($userIds as $uid) {
             $users[$uid] = $this->userService->find($uid);
         }
-        
+
         // Process comments to add individual and like information
         foreach ($comments as $comment) {
             $userId = $comment->getUserId();
@@ -171,7 +171,7 @@ class NewsController
                 $individual = Registry::individualFactory()->make($gedcom_id, $tree);
                 $comment->setIndividual($individual);
             }
-            
+
             // Set like information from batch data
             $commentId = $comment->getCommentsId();
             $comment->setLikesCount($likesCounts[$commentId] ?? 0);
@@ -200,7 +200,7 @@ class NewsController
         
         // Filter articles by current language, excluding current news
         $articles = $this->filterByLanguage($articles, $news_id);
-        
+
         // Filter popular articles by current language, excluding current news
         $popularArticles = $this->filterByLanguage($popularArticles, $news_id);
 
@@ -292,7 +292,7 @@ class NewsController
         $body = Validator::parsedBody($request)->string('body');
         $brief = Validator::parsedBody($request)->string('brief');
         $media_id = Validator::parsedBody($request)->string('obje-xref');
-        
+
         // Validate input data
         if (mb_strlen(trim($subject)) === 0) {
             FlashMessages::addMessage(I18N::translate('Subject cannot be empty'), 'danger');
@@ -303,7 +303,7 @@ class NewsController
                 'news_id' => $news_id,
             ]));
         }
-        
+
         if (mb_strlen($subject) > 255) {
             FlashMessages::addMessage(I18N::translate('Subject is too long (maximum 255 characters)'), 'danger');
             return redirect(route('module', [
@@ -313,7 +313,7 @@ class NewsController
                 'news_id' => $news_id,
             ]));
         }
-        
+
         // Validate date
         try {
             $updatedDate = Carbon::parse($updated);
@@ -326,7 +326,7 @@ class NewsController
                 'news_id' => $news_id,
             ]));
         }
-        
+
         // Validate media_id if provided
         // Note: media_id is stored as string with default '' (not nullable in DB)
         if ($media_id !== '' && $media_id !== null) {
@@ -344,11 +344,11 @@ class NewsController
             // Use empty string instead of null, as DB field is not nullable
             $media_id = '';
         }
-        
+
         // Handle empty category value (empty string) properly
         $category_id_raw = $request->getParsedBody()['category_id'] ?? '';
         $category_id = $category_id_raw === '' ? null : (int)$category_id_raw;
-        
+
         // Validate category_id if provided
         if ($category_id !== null) {
             $category = $this->categoryRepository->find($category_id);
@@ -362,9 +362,9 @@ class NewsController
                 ]));
             }
         }
-        
+
         $is_pinned = (bool)Validator::parsedBody($request)->integer('is_pinned', 0);
-        
+
         // Get selected languages
         $languages = Validator::parsedBody($request)->array('languages', []);
         $languages_str = implode(',', $languages);
@@ -385,11 +385,11 @@ class NewsController
             }
             
             $this->newsService->update(
-                $news, 
-                $subject, 
-                $brief, 
-                $body, 
-                $media_id, 
+                $news,
+                $subject,
+                $brief,
+                $body,
+                $media_id,
                 $updatedDate,
                 $category_id,
                 $is_pinned,
@@ -440,7 +440,7 @@ class NewsController
         if ($news === null) {
             throw new HttpNotFoundException(I18N::translate('%s does not exist.', 'news_id:' . $news_id));
         }
-        
+
         $this->newsService->delete($news);
         FlashMessages::addMessage(I18N::translate('News deleted successfully'), 'success');
 
@@ -458,7 +458,7 @@ class NewsController
         $tree = Validator::attributes($request)->tree();
         $news_id = Validator::queryParams($request)->integer('news_id');
         $user_id = Auth::id();
-        
+
         if ($user_id === null) {
             return response([
                 'success' => false,
@@ -489,7 +489,7 @@ class NewsController
 
     /**
      * Display news filtered by category
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -503,12 +503,12 @@ class NewsController
 
         $totalArticles = $this->newsService->countByCategory($tree, $category_id);
         $articles = $this->ensureCollection($this->newsService->findByCategory($tree, $category_id, $limit, $offset));
-        
+
         // Filter articles by current language
         $articles = $this->filterByLanguage($articles);
-        
+
         $categories = $this->newsService->getAllCategories();
-        
+
         // Find the current category
         $currentCategory = null;
         foreach ($categories as $category) {
@@ -517,7 +517,7 @@ class NewsController
                 break;
             }
         }
-        
+
         if ($currentCategory === null) {
             throw new HttpNotFoundException(I18N::translate('Category not found'));
         }
@@ -599,7 +599,7 @@ class NewsController
 
     /**
      * Toggle pinned status for a news article
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
@@ -613,19 +613,19 @@ class NewsController
         }
 
         $news = $this->newsService->find($news_id, $tree);
-        
+
         if ($news === null) {
             throw new HttpNotFoundException(I18N::translate('%s does not exist.', 'news_id:' . $news_id));
         }
-        
+
         $isPinned = $this->newsService->togglePinned($news);
-        
-        $message = $isPinned 
+
+        $message = $isPinned
             ? I18N::translate('News has been pinned')
             : I18N::translate('News has been unpinned');
-            
+
         FlashMessages::addMessage($message, 'success');
-        
+
         return redirect(route('module', [
             'module' => $this->module->name(),
             'action' => 'ShowNews',
@@ -633,4 +633,4 @@ class NewsController
             'tree' => $tree->name(),
         ]));
     }
-} 
+}

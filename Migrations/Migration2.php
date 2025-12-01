@@ -25,4 +25,4 @@ class Migration2 implements MigrationInterface
             });
         }
     }
-} 
+}

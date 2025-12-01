@@ -21,14 +21,14 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                 <input type="text" class="form-control" id="category_name" name="name" value="<?php echo e($category->getName()); ?>" required>
                 <small class="form-text text-muted"><?php echo I18N::translate('This name will be used if translation is missing'); ?></small>
             </div>
-            
+
             <div class="mb-3">
                 <label class="form-label"><?php echo I18N::translate('Translations'); ?></label>
                 <div class="card">
                     <div class="card-body">
-                        <?php 
+                        <?php
                         $translations = $category->getTranslations();
-                        foreach ($available_languages as $lang): 
+                        foreach ($available_languages as $lang):
                             $langName = $lang;
                             // Try to get language name from I18N if available
                             if (function_exists('locale_get_display_language')) {
@@ -43,10 +43,10 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                                 <label for="translation_<?php echo e($lang); ?>" class="form-label small">
                                     <?php echo e(strtoupper($lang)); ?> - <?php echo e($langName); ?>
                                 </label>
-                                <input type="text" 
-                                       class="form-control form-control-sm" 
-                                       id="translation_<?php echo e($lang); ?>" 
-                                       name="translations[<?php echo e($lang); ?>]" 
+                                <input type="text"
+                                       class="form-control form-control-sm"
+                                       id="translation_<?php echo e($lang); ?>"
+                                       name="translations[<?php echo e($lang); ?>]"
                                        value="<?php echo e($translations[$lang] ?? ''); ?>"
                                        placeholder="<?php echo I18N::translate('Leave empty to use fallback name'); ?>">
                             </div>
@@ -54,7 +54,7 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                     </div>
                 </div>
             </div>
-            
+
             <div class="mb-3">
                 <label for="category_description" class="form-label"><?php echo I18N::translate('Description'); ?></label>
                 <textarea class="form-control" id="category_description" name="description" rows="3"><?php echo e($category->getDescription()); ?></textarea>
@@ -64,7 +64,7 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                 <input type="number" class="form-control" id="sort_order" name="sort_order" value="<?php echo e($category->getSortOrder()); ?>">
             </div>
             <input type="hidden" name="category_id" value="<?php echo e($category->getCategoryId()); ?>">
-            
+
             <div class="row">
                 <div class="col-auto">
                     <button type="submit" class="btn btn-primary">
@@ -79,8 +79,8 @@ use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
                     </a>
                 </div>
             </div>
-            
+
             <?php echo csrf_field(); ?>
         </form>
     </div>
-</div> 
+</div>
